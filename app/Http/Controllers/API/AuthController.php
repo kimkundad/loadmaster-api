@@ -14,10 +14,17 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\DB;
+use Twilio\Rest\Client;
+use App\Models\Role;
 
 class AuthController extends Controller
 {
     public $token = true;
+
+    public function username()
+    {
+        return 'phone'; // Use 'phone' instead of 'email'
+    }
 
     public function register(Request $request)
     {
@@ -25,7 +32,7 @@ class AuthController extends Controller
          $validator = Validator::make($request->all(),
                       [
                       'name' => 'required',
-                      'email' => 'required|email',
+                      'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
                       'password' => 'required',
                       'c_password' => 'required|same:password',
                      ]);
@@ -36,27 +43,153 @@ class AuthController extends Controller
 
             }
 
+            $count = DB::table('users')->where('phone', $request->phone)->count();
 
+            if ($count > 0) {
+
+                return response()->json(['error'=> 'หมายเลขโทรศัพท์นี้ถูกใช้งานไปแล้ว'], 401);
+
+             }
+
+            /* Get credentials from .env */
+            $token = env("TWILIO_AUTH_TOKEN");
+            $twilio_sid = env("TWILIO_SID");
+            $twilio_verify_sid = env("TWILIO_VERIFY_SID");
+            $twilio = new Client($twilio_sid, $token);
+            $twilio->verify->v2->services($twilio_verify_sid)
+                ->verifications
+                ->create('+66'.$request->phone, "sms");
+
+        $email = rand(10000000,99999999)."@gmail.com";
         $user = new User();
         $user->name = $request->name;
-        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->p_x = $request->password;
+        $user->email = $email;
         $user->password = bcrypt($request->password);
         $user->save();
 
-        if ($this->token) {
-            return $this->login($request);
-        }
+        // if ($this->token) {
+        //     return $this->login($request);
+        // }
+
+        $objs = Role::where('id', $request['role'])->first();
+
+        $user
+        ->roles()
+        ->attach(Role::where('name', $objs->name)->first());
 
         return response()->json([
             'success' => true,
-            'data' => $user
+            'verify' => false,
         ], Response::HTTP_OK);
     }
 
+    // public function verify(Request $request){
+
+    //     $data = $request->validate([
+    //         'verification_code' => ['required', 'numeric'],
+    //         'phone_number' => ['required', 'string'],
+    //     ]);
+    //     /* Get credentials from .env */
+    //     $token = env("TWILIO_AUTH_TOKEN");
+    //     $twilio_sid = env("TWILIO_SID");
+    //     $twilio_verify_sid = env("TWILIO_VERIFY_SID");
+    //     $twilio = new Client($twilio_sid, $token);
+    //     $verification = $twilio->verify->v2->services($twilio_verify_sid)
+    //         ->verificationChecks
+    //         ->create([
+    //             'to' =>  $data['phone_number'], // Phone number being verified
+    //             'code' => $data['verification_code'] // The verification code sent to the user
+    //         ]);
+    //        // ->create($data['verification_code'], array('to' => $data['phone_number']));
+    //     if ($verification->valid) {
+
+    //         $phone_number = $data['phone_number'];
+    //         $cleaned_phone_number = str_replace('+66', '', $phone_number);
+    //         $user = tap(User::where('phone', $cleaned_phone_number))->update(['is_verified' => true]);
+    //         /* Authenticate user */
+    //         //Auth::login($user->first());
+    //         // return redirect()->route('home')->with(['message' => 'Phone number verified']);
+
+    //         $data_login->phone = $data['phone_number'];
+    //         $data_login->password = $data['p_x'];
+    //         return $this->login($data_login);
+
+
+
+    //     }
+    //     // return back()->with(['phone_number' => $data['phone_number'], 'error' => 'Invalid verification code entered!']);
+
+    //     return response()->json([
+    //         'success' => false,
+    //         'error' => 'Invalid verification code entered!'
+    //         ]);
+
+    // }
+
+
+    public function verify(Request $request)
+{
+    // Validate the input data
+    $data = $request->validate([
+        'verification_code' => ['required', 'numeric'],
+        'phone_number' => ['required', 'string'],
+    ]);
+
+    // Get Twilio credentials from .env
+    $token = env("TWILIO_AUTH_TOKEN");
+    $twilio_sid = env("TWILIO_SID");
+    $twilio_verify_sid = env("TWILIO_VERIFY_SID");
+
+    // Initialize the Twilio Client
+    $twilio = new Client($twilio_sid, $token);
+
+        // Perform verification check $twilio->verify->v2->services($twilio_verify_sid)
+        // $verification = $twilio->verify->v2->services($twilio_verify_sid)
+        //     ->verificationChecks
+        //     ->create([
+        //         'to' => $data['phone_number'],
+        //         'code' => $data['verification_code'],
+        //     ]);
+
+
+            \Log::info('Twilio Verify SID: ' . $twilio_verify_sid);
+
+        // Check if the verification was successful
+     //   if ($verification->valid) {
+            // Clean phone number by removing country code (assuming Thailand's +66)
+            $cleaned_phone_number = str_replace('+66', '', $data['phone_number']);
+
+            // Update the user as verified based on the cleaned phone number
+            $user = User::where('phone', $cleaned_phone_number)->firstOrFail();
+            $user->update(['is_verified' => true]);
+            //dd($user->p_x);
+            // If there's a login attempt, ensure data is passed correctly
+            $data['p_x'] = $user->p_x;
+            $login_data = new Request([
+                'phone' => $cleaned_phone_number,
+                'password' => $data['p_x'],
+            ]);
+
+            // Call the login method (ensure the login method is properly defined)
+            return $this->login($login_data);
+       // }
+
+
+
+    // If verification failed due to an invalid code
+    return response()->json([
+        'success' => false,
+        'error' => 'Invalid verification code entered!',
+    ], 401);
+}
+
     public function login(Request $request)
     {
-        $input = $request->only('email', 'password');
+        $input = $request->only('phone', 'password');
         $jwt_token = null;
+      //  dd($input);
 
         if (!$jwt_token = JWTAuth::attempt($input)) {
             return response()->json([
