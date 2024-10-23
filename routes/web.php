@@ -16,3 +16,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/images/{file}', function ($file) {
+    $url = Storage::disk('do_spaces')->temporaryUrl(
+        $file,
+        now()->addMinutes(5)
+    );
+    if ($url) {
+        return Redirect::to($url);
+    }
+    return abort(404);
+})->where('file', '.+');

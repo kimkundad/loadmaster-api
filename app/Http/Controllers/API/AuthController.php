@@ -7,6 +7,7 @@ use Validator;
 use App\Models\User;
 use App\Models\order;
 use App\Models\branch;
+use App\Models\ImgStep;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\DB;
 use Twilio\Rest\Client;
 use App\Models\Role;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class AuthController extends Controller
 {
@@ -387,15 +390,13 @@ class AuthController extends Controller
                       [
                       'name' => 'required',
                       'phone' => 'required',
-                      'email' => 'required',
                       'address' => 'required',
                       'province' => 'required',
-                      'postcode' => 'required',
-                      'district' => 'required',
-                      'subdistrict' => 'required',
                       'code' => 'required',
                       'timer' => 'required',
                       'admin_branch' => 'required',
+                      'selectedLat2' => 'required',
+                      'selectedLng2' => 'required',
                      ]);
 
          if ($validator->fails()) {
@@ -415,17 +416,162 @@ class AuthController extends Controller
             $objs->phone = $request['phone'];
             $objs->admin_branch = $request['admin_branch'];
             $objs->time = $request['timer'];
-            $objs->email = $request['email'];
             $objs->province = $request['province'];
-            $objs->postcode = $request['postcode'];
-            $objs->district = $request['district'];
-            $objs->subdistrict = $request['subdistrict'];
+            $objs->latitude = $request['selectedLat2'];
+            $objs->longitude = $request['selectedLng2'];
             $objs->save();
 
             return response()->json([
                 'success' => true,
                 'branch' => $objs,
                 ]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function getProvince(Request $request){
+
+        $validator = Validator::make($request->all(),
+                      [
+                      'province2' => 'required'
+                     ]);
+
+         if ($validator->fails()) {
+
+               return response()->json(['error'=>$validator->errors()], 401);
+
+            }
+
+            try{
+
+                $province = DB::table('logistics')
+                    ->where('province', $request['province2'])
+                    ->first();
+
+                return response()->json([
+                    'success' => true,
+                    'province' => $province,
+                    ]);
+
+
+
+            }catch(Exception $e){
+                return response()->json(['success'=>false,'message'=>'something went wrong']);
+            }
+
+    }
+
+    public function createOrdere(Request $request){
+
+        $validator = Validator::make($request->all(),
+                      [
+                      'latitude' => 'required',
+                      'longitude' => 'required',
+                      'latitude2' => 'required',
+                      'longitude2' => 'required',
+                      'adddress' => 'required',
+                      'name' => 'required',
+                      'phone' => 'required',
+                      'adddress2' => 'required',
+                      'name2' => 'required',
+                      'phone2' => 'required',
+                      'size' => 'required',
+                      'type' => 'required|array', // Validate as array
+                      'type.*' => 'string', // Ensure each item in the array is a string
+                      'weight' => 'required',
+                      'province2' => 'required',
+                      'province' => 'required',
+                     ]);
+
+         if ($validator->fails()) {
+
+               return response()->json(['error'=>$validator->errors()], 401);
+
+            }
+
+        try{
+
+            $user = JWTAuth::authenticate($request->token);
+
+            $objs = new order();
+            $objs->user_id = $user->id;
+            $objs->branch_id = 0;
+            $objs->code_order = 'LM'.rand(1000000,9999999);
+            $objs->amount = $request['weight'];
+            $objs->price = $request['price'];
+            $objs->latitude = $request['latitude'];
+            $objs->longitude = $request['longitude'];
+            $objs->latitude2 = $request['latitude2'];
+            $objs->longitude2 = $request['longitude2'];
+            $objs->adddress_re = $request['adddress2'];
+            $objs->name_re = $request['name2'];
+            $objs->phone_re = $request['phone2'];
+            $objs->remark_re = $request['remark2'];
+            $objs->province2 = $request['province2'];
+            $objs->size = $request['size'];
+            $objs->type = implode(',', $request['type']);
+            $objs->weight = $request['weight'];
+            $objs->b_name = $request['name2'];
+            $objs->b_address = $request['adddress2'];
+            $objs->o_name = $user->name;
+            $objs->b_phone = $request['b_phone'];
+            $objs->b_recive_name = $request['name2'];
+            $objs->save();
+
+            return response()->json([
+                'success' => true,
+                'order' => $objs,
+                ]);
+
+
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function myLocation(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = DB::table('orders')
+            ->where('driver_id', $user->id)
+            ->where('order_status', 1)
+            ->first();
+
+            if($order){
+
+                DB::table('orders')
+                    ->where('driver_id', $user->id)
+                    ->where('order_status', 1)
+                    ->update(
+                        [
+                            'd_lat' => $request->latitude,
+                            'd_long' => $request->longitude,
+                            'updated_at' => Carbon::now()
+                            ]
+                    );
+
+                return response()->json([
+                    'success' => true,
+                    'order' => $order,
+                    ]);
+
+            }else{
+
+                return response()->json([
+                    'success' => false,
+                    'data' => $user->id
+                    ]);
+
+            }
+
+
 
         }catch(Exception $e){
             return response()->json(['success'=>false,'message'=>'something went wrong']);
@@ -479,13 +625,24 @@ class AuthController extends Controller
             ->where('id', $id)
             ->first();
 
-            return response()->json(['order' => $order]);
+            $ImgStep = ImgStep::where('order_id', $id)->where('stepNo', 1)->get();
+            $ImgStep2 = ImgStep::where('order_id', $id)->where('stepNo', 2)->get();
+
+            return response()->json([
+                'order' => $order,
+                'img' => $ImgStep,
+                'img2' => $ImgStep2
+            ]);
 
         }catch(Exception $e){
             return response()->json(['success'=>false,'message'=>'something went wrong']);
         }
 
     }
+
+
+
+
 
     public function logout(Request $request)
     {
@@ -561,6 +718,368 @@ class AuthController extends Controller
     }
 
 
+    // public function getOrderDri(Request $request)
+    // {
+    //     try{
+    //         $user = JWTAuth::authenticate($request->token);
+
+    //         $objs = order::where('driver_id', $user->id)->where('order_status', 1)->get();
+    //         return response()->json(['order' => $objs]);
+
+    //     }catch(Exception $e){
+    //         return response()->json(['success'=>false,'message'=>'something went wrong']);
+    //     }
+    // }
+
+
+    public function getOrderDri(Request $request) {
+        try {
+            $user = JWTAuth::authenticate($request->token);
+
+            // Get the optional search query from the request
+            $receipt = $request->query('receipt');
+            $currentDate = now()->format('Y-m-d');
+
+            // Query orders based on the driver and order status, with an optional receipt filter
+            $query = order::where('driver_id', $user->id)->where('dri_date', '>=', $currentDate);
+
+            if ($receipt) {
+                $query->where('code_order', 'like', "%$receipt%");
+            }
+
+            $objs = $query->get();
+
+            return response()->json([
+                'order' => $objs,
+                'msgStatus' => 200,
+                'date' => $currentDate
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'something went wrong']);
+        }
+    }
+
+
+    public function searchOrder(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $objs = order::where('driver_id', $user->id)->where('code_order', 'like', $request->search)->first();
+            return response()->json(['order' => $objs]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+
+    public function updateProfile(Request $request)
+{
+    try {
+        $user = JWTAuth::authenticate($request->token);
+
+        // Validate the incoming request
+        $validatedData = $request->validate([
+            'name' => 'required',
+        ]);
+
+        // Update the user's profile
+        $user->update($validatedData);
+
+        return response()->json([
+            'user' => $user,
+            'msgStatus' => 200,
+            'message' => 'Profile updated successfully'
+        ]);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong',
+        ], 500);
+    }
+}
+
+
+public function postCancelDanger(Request $request)
+{
+    try {
+        $user = JWTAuth::authenticate($request->token);
+
+        // Fetch the order by id
+        $order = order::where('id', $request->id)->where('driver_id', $user->id)->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found',
+            ], 404);
+        }
+
+        // Update order fields
+        $order->order_status = 1;
+        $order->remark_dri3 = null;
+        $order->selectedLat_dan = null;
+        $order->selectedLng_dan = null;
+        $order->province_dan = null;
+        $order->save();
+
+        // Delete all images associated with stepNo 3
+        $imagesToDelete = ImgStep::where('order_id', $order->id)->where('stepNo', 3)->get();
+
+        foreach ($imagesToDelete as $image) {
+            // Remove the image path from the DigitalOcean Space
+            $trimmed = str_replace(
+                'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/job/',
+                '',
+                $image->image
+            );
+
+            $storage = Storage::disk('do_spaces');
+            $storage->delete('loadmaster/job/' . $trimmed);
+
+            // Delete the image record from the database
+            $image->delete();
+        }
+
+
+        $orderx = order::where('id', $request->id)->where('driver_id', $user->id)->first();
+
+        return response()->json([
+            'msgStatus' => 200,
+            'message' => 'ยกเลิกแจ้งเหตุสำเร็จแล้ว',
+            'order' => $orderx
+        ]);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong',
+        ], 500);
+    }
+}
+
+
+
+    public function postImgStep1(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = order::where('driver_id', $user->id)
+                    ->where('id', $request->id)
+                    ->first();
+
+            //img_steps    ImgStep
+
+            if($order){
+
+                if($request->stepNo == 1){
+
+                    $objs = order::find($request->id);
+                    $objs->remark_dri1 = $request['remark_dri1'];
+                    $objs->status_dri1 = 1;
+                    $objs->save();
+
+                }else if($request->stepNo == 2){
+
+                    $objs = order::find($request->id);
+                    $objs->remark_dri2 = $request['remark_dri1'];
+                    $objs->status_dri1 = 1;
+                    $objs->save();
+
+                }else{
+
+                    $objs = order::find($request->id);
+                    $objs->remark_dri3 = $request['remark_dri1'];
+                    $objs->status_dri1 = 1;
+                    $objs->order_status = 3;
+                    $objs->selectedLat_dan = $request['selectedLat'];
+                    $objs->selectedLng_dan = $request['selectedLng'];
+                    $objs->province_dan = $request['province'];
+                    $objs->save();
+
+                }
+
+
+                // Handle deleted images
+                if ($request->has('deletedImages')) {
+                    $deletedImageIds = json_decode($request->deletedImages, true);
+
+                    // Retrieve the images to be deleted
+                    $imagesToDelete = ImgStep::whereIn('id', $deletedImageIds)->get();
+
+                    foreach ($imagesToDelete as $image) {
+                        // Delete the image from DigitalOcean Spaces
+
+                        $trimmed = str_replace(
+                            'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/job/',
+                            '',
+                            $image->image
+                        );
+
+                        $storage = Storage::disk('do_spaces');
+                        $storage->delete('loadmaster/job/'. $trimmed, 'public'); // Assuming 'image' holds the path
+
+                        // Delete the image record from the database
+                        $image->delete();
+                    }
+                }
+
+                // Handle multiple image uploads
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    // Resize the image to 800x800 while keeping the aspect ratio
+                    $img = Image::make($image->getRealPath());
+                    $img->resize(800, 800, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $img->stream(); // Prepare image for upload
+
+                    // Generate a unique filename
+                    $filename = time() . '_' . $image->getClientOriginalName();
+
+                    // Upload the image to DigitalOcean Spaces
+                    Storage::disk('do_spaces')->put(
+                        'loadmaster/job/' . $filename,
+                        $img->__toString(),  // Ensure the image is in string format
+                        'public' // Make the file publicly accessible
+                    );
+
+                    // Save image info to ImgStep model
+                    $imgStep = new ImgStep();
+                    $imgStep->driver_id = $user->id;
+                    $imgStep->order_id = $order->id;
+                    $imgStep->image = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/job/' . $filename;
+                    $imgStep->stepNo = $request->stepNo;
+                    $imgStep->address = $request->getAddress;
+                    $imgStep->save();
+                }
+            }
+
+                return response()->json([
+                    'order' => $order,
+                    'msgStatus' => 200
+                ]);
+
+            }else{
+
+                return response()->json([
+                    'order' => null,
+                    'msgStatus' => 100
+                ]);
+
+            }
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function getImgStep1(Request $request, $id){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = order::where('id', $id)->first();
+            $Image = ImgStep::where('order_id', $id)->where('stepNo', 1)->get();
+            return response()->json([
+                'order' => $order,
+                'img' =>$Image
+            ]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function getImgStep2(Request $request, $id){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = order::where('id', $id)->first();
+            $Image = ImgStep::where('order_id', $id)->where('stepNo', 2)->get();
+            return response()->json([
+                'order' => $order,
+                'img' =>$Image
+            ]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function getImgStep3(Request $request, $id){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = order::where('id', $id)->first();
+            $Image = ImgStep::where('order_id', $id)->where('stepNo', 3)->get();
+            return response()->json([
+                'order' => $order,
+                'img' =>$Image
+            ]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function getHistory(Request $request) {
+        try {
+            $user = JWTAuth::authenticate($request->token);
+
+            // Get the optional search query from the request
+            $receipt = $request->query('receipt');
+
+            // Query orders based on the driver and order status, with an optional receipt filter
+            $query = order::where('driver_id', $user->id)
+                          ->where('order_status', 2);
+
+            if ($receipt) {
+                $query->where('code_order', 'like', "%$receipt%");
+            }
+
+            $objs = $query->get();
+
+            return response()->json([
+                'order' => $objs,
+                'msgStatus' => 200
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'something went wrong']);
+        }
+    }
+
+    public function postStatusDri(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $objs = order::find($request->id);
+                    $objs->order_status = 2;
+                    $objs->save();
+
+            return response()->json([
+                'order' => $objs,
+                'msgStatus' => 200
+            ]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
 
     public function refresh()
     {
