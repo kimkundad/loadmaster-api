@@ -1042,8 +1042,7 @@ public function postCancelDanger(Request $request)
             $receipt = $request->query('receipt');
 
             // Query orders based on the driver and order status, with an optional receipt filter
-            $query = order::where('driver_id', $user->id)
-                          ->where('order_status', 2);
+            $query = order::where('driver_id', $user->id);
 
             if ($receipt) {
                 $query->where('code_order', 'like', "%$receipt%");
