@@ -678,7 +678,7 @@ class AuthController extends Controller
 
         try{
             $user = JWTAuth::authenticate($request->token);
-            $objs = order::where('user_id', $user->id)->get();
+            $objs = order::where('user_id', $user->id)->orderBy('id', 'desc')->get();
             return response()->json(['order' => $objs]);
 
         }catch(Exception $e){
