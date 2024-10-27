@@ -35,7 +35,7 @@ Route::post('/user-branch-create', [AuthController::class, 'userBranchCreate'])-
 Route::get('/getOrderByID/{id}', [AuthController::class, 'getOrderByID'])->middleware("jwtAuth");
 Route::post('/checkQrcode', [AuthController::class, 'checkQrcode'])->middleware("jwtAuth");
 Route::post('/createOrdere', [AuthController::class, 'createOrdere'])->middleware("jwtAuth");
-Route::post('/getProvince', [AuthController::class, 'getProvince'])->middleware("jwtAuth");
+Route::post('/getProvince', [AuthController::class, 'getProvince']);
 Route::post('/myLocation', [AuthController::class, 'myLocation'])->middleware("jwtAuth");
 
 
