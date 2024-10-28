@@ -692,7 +692,7 @@ class AuthController extends Controller
 
         try{
             $user = JWTAuth::authenticate($request->token);
-            $objs = branch::where('user_id', $user->id)->get();
+            $objs = branch::where('user_id', $user->id)->orderBy('id', 'desc')->get();
             return response()->json(['branch' => $objs]);
 
         }catch(Exception $e){
