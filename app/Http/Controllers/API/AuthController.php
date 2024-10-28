@@ -496,10 +496,14 @@ class AuthController extends Controller
 
             $user = JWTAuth::authenticate($request->token);
 
+            $count = order::count();
+            $formattedCount = str_pad($count, 6, '0', STR_PAD_LEFT);  // Result: "0025"
+            $code_order = 'LM'.date('Y').''.date('m').date('d').''.$formattedCount;
+
             $objs = new order();
             $objs->user_id = $user->id;
             $objs->branch_id = 0;
-            $objs->code_order = 'LM'.rand(1000000,9999999);
+            $objs->code_order = $code_order;
             $objs->amount = $request['weight'];
             $objs->price = $request['price'];
             $objs->latitude = $request['latitude'];
@@ -517,7 +521,7 @@ class AuthController extends Controller
             $objs->b_name = $request['name2'];
             $objs->b_address = $request['adddress2'];
             $objs->o_name = $user->name;
-            $objs->b_phone = $request['b_phone'];
+            $objs->b_phone = $request['phone2'];
             $objs->b_recive_name = $request['name2'];
             $objs->waffles = $request['warb'];
             $objs->save();
