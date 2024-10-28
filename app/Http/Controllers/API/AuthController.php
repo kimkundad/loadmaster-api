@@ -519,6 +519,7 @@ class AuthController extends Controller
             $objs->o_name = $user->name;
             $objs->b_phone = $request['b_phone'];
             $objs->b_recive_name = $request['name2'];
+            $objs->waffles = $request['warb'];
             $objs->save();
 
             return response()->json([
