@@ -160,10 +160,10 @@
 
         <div style="width: 100%; text-align: right;">
             <div style="font-size: 13px; line-height: 10px; font-family: 'Prompt';">
-                <b style="font-size: 16px; color: #033169; font-family: 'Prompt';">บริษัท โลคมาสเตอร์ โลจิสติกส์ จำกัด</b><br>
+                <p><b style="font-size: 16px; color: #033169; font-family: 'Prompt';">บริษัท โลคมาสเตอร์ โลจิสติกส์ จำกัด</b><br>
                 305 ซอยพระรามที่ 2 แขวงบางมด เขตจอมทอง กรุงเทพมหานคร 10150<br>
                 โทรศัพท์: 099-276-2487<br>
-                ลขประจำตัวผู้เสียภาษี: 0105567110129
+                ลขประจำตัวผู้เสียภาษี: 0105567110129</p>
             </div>
 
         </div>
