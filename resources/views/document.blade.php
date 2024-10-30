@@ -6,27 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice</title>
 
+
     <style>
-        @font-face {
-            font-family: 'Prompt';
-            src: public_path({{ '/fonts/Prompt-Regular.ttf' }}) format('truetype');
-            font-weight: normal;
-        }
+@font-face {
+                font-family: 'Prompt';
+                src: url({{ storage_path("fonts/Prompt-Regular.ttf") }}) format("truetype");
+                font-weight: 400;
+                font-style: normal;
+            }
 
-        @font-face {
-            font-family: 'Prompt';
-            src: public_path({{ '/fonts/Prompt-Bold.ttf' }}) format('truetype');
-            font-weight: bold;
-        }
-
-        body,
         body,
         h1,
         h2,
         h3,
         h4,
         h5,
-        h6 {
+        h6, {
             font-family: 'Prompt', sans-serif !important;
         }
 
@@ -57,13 +52,17 @@
         h3 {
             font-size: 15px
         }
+        .prompt-regular {
+        font-family: "Prompt", serif !important;
+        font-weight: 400 !important;
+        font-style: normal !important;
+        }
 
-        h1,
-        h2,
-        h3,
         p {
             margin: 0;
             padding: 0;
+            font-size: 12px;
+            font-weight: 400;
         }
 
         .header {
@@ -139,6 +138,7 @@
             font-size: 13px
         }
     </style>
+
 </head>
 
 <body>
@@ -159,11 +159,14 @@
         </div>
 
         <div style="width: 100%; text-align: right;">
-            <div style="font-size: 13px; line-height: 10px; font-family: 'Prompt';">
-                <p style="font-family: 'Prompt';"><b style="font-size: 16px; color: #033169; font-family: 'Prompt';">บริษัท โลคมาสเตอร์ โลจิสติกส์ จำกัด</b><br>
+            <div style="font-size: 13px; line-height: 10px">
+                <p>
+                <b style="font-size: 16px; color: #033169">บริษัท โลคมาสเตอร์ โลจิสติกส์ จำกัด 22</b><br>
                 305 ซอยพระรามที่ 2 แขวงบางมด เขตจอมทอง กรุงเทพมหานคร 10150<br>
                 โทรศัพท์: 099-276-2487<br>
                 ลขประจำตัวผู้เสียภาษี: 0105567110129</p>
+                <p style="font-weight: Regular;">ทดลอง 555+
+                </p>
             </div>
 
         </div>
@@ -173,7 +176,7 @@
             <tr>
                 <td style="width: 65%; vertical-align: top;">
                     <h3>บริษัท ทัพพีพิศ พิลส์ จำกัด 2 PAKNAM</h3>
-                    <p class="add_cus mt-5">ที่อยู่ : เลขที่ 75/19-20 ถนนศรีสมุทร ตำบลปากน้ำ อำเภยเมืองสมุทรปราการ จังหวัดสมุทรปราการ 10270</p>
+                    <b class="add_cus mt-5 prompt-regular">ที่อยู่ : เลขที่ 75/19-20 ถนนศรีสมุทร ตำบลปากน้ำ อำเภยเมืองสมุทรปราการ จังหวัดสมุทรปราการ 10270</b>
                     <p class="add_cus mt-5">โทร : 0625418356</p>
                     <p class="add_cus mt-5">เลขประจำตัวผู้เสียภาษี : 0125566039617</p>
                 </td>
@@ -236,9 +239,8 @@
                                         <div
                                             style="justify-content: space-around; align-items: center; display: flex; margin-top: 20px">
                                             <div style="width: 50%; float:left; text-align: center; margin-top: 8px; font-size: 12px">
-                                                <img src={{ public_path('img/1730228290286.jpg') }} alt="Company Logo"
+                                                <img src={{ public_path('img/1730228290286.jpg') }}
                                                     style="height: auto; width: 100px; margin-bottom: -15px" />
-
                                                 <br>
                                                 ................................................................<br>
                                                 (ผู้รับเงิน)
