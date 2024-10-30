@@ -20,6 +20,7 @@ use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use PDF;
 
 class AuthController extends Controller
 {
@@ -508,6 +509,8 @@ class AuthController extends Controller
             $objs->price = $request['price'];
             $objs->latitude = $request['latitude'];
             $objs->longitude = $request['longitude'];
+            $objs->d_lat = $request['latitude'];
+            $objs->d_long = $request['longitude'];
             $objs->latitude2 = $request['latitude2'];
             $objs->longitude2 = $request['longitude2'];
             $objs->adddress_re = $request['adddress2'];
@@ -684,6 +687,19 @@ class AuthController extends Controller
         try{
             $user = JWTAuth::authenticate($request->token);
             $objs = order::where('user_id', $user->id)->orderBy('id', 'desc')->get();
+            return response()->json(['order' => $objs]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function getUserOrderCus(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+            $objs = order::where('user_id', $user->id)->whereIn('order_status', [0,1])->orderBy('id', 'desc')->get();
             return response()->json(['order' => $objs]);
 
         }catch(Exception $e){
@@ -1063,6 +1079,28 @@ public function postCancelDanger(Request $request)
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => 'something went wrong']);
         }
+    }
+
+    public function generatePDF(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $objs = order::where('id', $request->id)->where('user_id', $user->id)->first();
+
+            $data = [
+                'title' => $objs->code_order,
+            ];
+
+            $pdf = \PDF::loadView('document', $data)
+                ->setPaper('a4', 'portrait'); // Optional: Set paper size and orientation
+             //  return view('admin.orders.document', $data);
+              return $pdf->download($objs->id.'.pdf');
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
     }
 
     public function postStatusDri(Request $request){
