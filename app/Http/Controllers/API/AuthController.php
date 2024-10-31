@@ -517,6 +517,7 @@ class AuthController extends Controller
             $objs->name_re = $request['name2'];
             $objs->phone_re = $request['phone2'];
             $objs->remark_re = $request['remark2'];
+            $objs->province = 'จ.สมุทรปราการ';
             $objs->province2 = $request['province2'];
             $objs->size = $request['size'];
             $objs->type = implode(',', $request['type']);
@@ -630,6 +631,32 @@ class AuthController extends Controller
 
             $order = DB::table('orders')
             ->where('user_id', $user->id)
+            ->where('id', $id)
+            ->first();
+
+            $ImgStep = ImgStep::where('order_id', $id)->where('stepNo', 1)->get();
+            $ImgStep2 = ImgStep::where('order_id', $id)->where('stepNo', 2)->get();
+
+            return response()->json([
+                'order' => $order,
+                'img' => $ImgStep,
+                'img2' => $ImgStep2
+            ]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+
+    public function getOrderByIDDri(Request $request, $id){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = DB::table('orders')
+            ->where('driver_id', $user->id)
             ->where('id', $id)
             ->first();
 

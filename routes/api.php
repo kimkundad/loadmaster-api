@@ -52,3 +52,4 @@ Route::get('/getHistory', [AuthController::class, 'getHistory'])->middleware("jw
 Route::post('/searchOrder', [AuthController::class, 'searchOrder'])->middleware("jwtAuth");
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware("jwtAuth");
 Route::post('/postCancelDanger', [AuthController::class, 'postCancelDanger'])->middleware("jwtAuth");
+Route::get('/getOrderByIDDri/{id}', [AuthController::class, 'getOrderByIDDri'])->middleware("jwtAuth");
