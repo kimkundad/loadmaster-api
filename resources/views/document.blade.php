@@ -14,6 +14,12 @@
                 font-weight: 400;
                 font-style: normal;
             }
+            @font-face {
+                font-family: 'Prompt';
+                src: url({{ storage_path("fonts/Prompt-Bold.ttf") }}) format("truetype");
+                font-weight: 700;
+                font-style: normal;
+            }
 
         body,
         h1,
