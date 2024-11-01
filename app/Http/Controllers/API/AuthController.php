@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\order;
 use App\Models\branch;
 use App\Models\ImgStep;
+use App\Models\document;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -910,7 +911,119 @@ public function postCancelDanger(Request $request)
     }
 }
 
+    public function postDoc(Request $request){
 
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $doc = document::where('stepNo', $request->stepNo)->where('user_id', $user->id)->first();
+
+            if ($doc && $doc->name) {
+
+                    // Delete the image from DigitalOcean Spaces
+
+                    $trimmed = str_replace(
+                        'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/doc/',
+                        '',
+                        $doc->name
+                    );
+
+                    $storage = Storage::disk('do_spaces');
+                    $storage->delete('loadmaster/doc/'. $trimmed, 'public'); // Assuming 'image' holds the path
+
+                    // Delete the image record from the database
+                    $doc->delete();
+
+            }
+
+             // Ensure the file is uploaded before proceeding
+            if ($request->hasFile('images')) {
+                $myImg = $request->file('images');
+            } else {
+                return response()->json(['success' => false, 'message' => 'No image file found.']);
+            }
+
+
+            // Resize the image to 800x800 while keeping the aspect ratio
+            $img = Image::make($myImg->getRealPath());
+            $img->resize(800, 800, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            $img->stream(); // Prepare image for upload
+
+            // Generate a unique filename
+            $filename = time() . '_' . $myImg->getClientOriginalName();
+
+            // Upload the image to DigitalOcean Spaces
+            Storage::disk('do_spaces')->put(
+                'loadmaster/doc/' . $filename,
+                $img->__toString(),  // Ensure the image is in string format
+                'public' // Make the file publicly accessible
+            );
+
+            // Save image info to ImgStep model
+            $imgStep = new document();
+            $imgStep->user_id = $user->id;
+            $imgStep->stepNo = $request->stepNo;
+            $imgStep->name = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/doc/' . $filename;
+            $imgStep->save();
+
+            return response()->json([
+                'msgStatus' => 200
+            ]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+
+    public function UpAvatar(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+             // Ensure the file is uploaded before proceeding
+             if ($request->hasFile('images')) {
+                $myImg = $request->file('images');
+            } else {
+                return response()->json(['success' => false, 'message' => 'No image file found.']);
+            }
+
+                // Resize the image to 800x800 while keeping the aspect ratio
+                $img = Image::make($myImg->getRealPath());
+                $img->resize(300, 300, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                $img->stream(); // Prepare image for upload
+
+                // Generate a unique filename
+                $filename = time() . '_' . $myImg->getClientOriginalName();
+
+                // Upload the image to DigitalOcean Spaces
+                Storage::disk('do_spaces')->put(
+                    'loadmaster/avatar/' . $filename,
+                    $img->__toString(),  // Ensure the image is in string format
+                    'public' // Make the file publicly accessible
+                );
+
+                // Save image info to the user's profile
+                $user->avatar = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/avatar/' . $filename;
+                $user->save();
+
+                return response()->json([
+                    'msgStatus' => 200,
+                    'user' => $user,
+                    'message' => 'Avatar updated successfully.'
+                ]);
+
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
 
     public function postImgStep1(Request $request){
 
@@ -1028,6 +1141,37 @@ public function postCancelDanger(Request $request)
 
     }
 
+    public function getImgDoc(Request $request, $id){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $Image = document::where('stepNo', $id)->where('user_id', $user->id)->first();
+
+            if($Image){
+
+                return response()->json([
+                    'img' => $Image,
+                    'dataStatus' => 200
+                ]);
+
+            }else{
+
+                return response()->json([
+                    'img' => null,
+                    'dataStatus' => 201
+                ]);
+
+            }
+
+
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
     public function getImgStep1(Request $request, $id){
 
         try{
@@ -1130,19 +1274,150 @@ public function postCancelDanger(Request $request)
 
     }
 
-    public function postStatusDri(Request $request){
+    public function postStatusDri(Request $request) {
+        try {
+            // ตรวจสอบว่า token ถูกต้องหรือไม่
+            $user = JWTAuth::authenticate($request->token);
+
+            // เช็คค่า status_dri และ status_dri1
+            $status = order::where('id', $request->id)
+                           ->where('status_dri', 1)
+                           ->where('status_dri1', 1)
+                           ->first();
+
+            // ตรวจสอบว่าทั้ง status_dri และ status_dri1 มีค่าเป็น 1 หรือไม่
+            if ($status) {
+                // หากทั้งสองสถานะเป็น 1 อัปเดต order_status เป็น 2
+                $objs = order::find($request->id);
+                $objs->order_status = 2;
+                $objs->save();
+
+                return response()->json([
+                    'order' => $objs,
+                    'success' => true,
+                    'msgStatus' => 200
+                ]);
+            } else {
+                // กรณีที่ status_dri และ status_dri1 ไม่ครบตามเงื่อนไข
+                return response()->json([
+                    'success' => false,
+                    'message' => 'กรุณาตรวจสอบข้อมูลให้ครบก่อน'
+                ]);
+            }
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong'
+            ]);
+        }
+    }
+
+
+    public function getDoc(Request $request){
+        try {
+            // ตรวจสอบการ authenticate token
+            $user = JWTAuth::authenticate($request->token);
+
+            $sumDoc = Document::where('user_id', $user->id)
+            ->whereBetween('stepNo', [1, 5])
+            ->where('status', 1)
+            ->count();
+
+            $doc = Document::where('user_id', $user->id)
+            ->whereBetween('stepNo', [1, 5])
+            ->get();
+
+            if($sumDoc == 5){
+                $statusDoc = true;
+            }else{
+                $statusDoc = false;
+            }
+
+          return response()->json([
+            'doc' => $doc,
+            'verify' => $statusDoc,
+            'success' => true,
+            'msgStatus' => 200
+        ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong'
+            ]);
+        }
+
+    }
+
+
+    public function notiStatus(Request $request)
+    {
+        try {
+            // ตรวจสอบการ authenticate token
+            $user = JWTAuth::authenticate($request->token);
+
+            // ค้นหาผู้ใช้ด้วย ID ที่ระบุ
+            $getUser = User::findOrFail($request->id);
+
+            // สลับสถานะ noti ระหว่าง 1 และ 0
+            $getUser->noti = $getUser->noti === 1 ? 0 : 1;
+
+            // บันทึกการเปลี่ยนแปลงและตรวจสอบความสำเร็จ
+            if ($getUser->save()) {
+
+                $getDataUser = User::findOrFail($request->id);
+
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'user_id' => $getUser->id,
+                        'noti_status' => $getUser->noti,
+                        'user' => $getDataUser
+                    ],
+                    'message' => 'Notification status updated successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update notification status'
+                ]);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage() // เพิ่มรายละเอียดข้อผิดพลาดเพื่อการดีบัก
+            ]);
+        }
+    }
+
+
+
+    public function postNotiDri(Request $request){
 
         try{
             $user = JWTAuth::authenticate($request->token);
 
-            $objs = order::find($request->id);
-                    $objs->order_status = 2;
-                    $objs->save();
+            $user = order::findOrFail($request->id);
 
-            return response()->json([
-                'order' => $objs,
-                'msgStatus' => 200
-            ]);
+              if($user->status_dri == 1){
+                  $user->status_dri = 0;
+
+              } else {
+                  $user->status_dri = 1;
+              }
+
+              $user->newStatus = $request->newStatus;
+
+
+                return response()->json([
+                    'data' => [
+                        'success' => $user->save(),
+                    ]
+                ]);
+
+
 
         }catch(Exception $e){
             return response()->json(['success'=>false,'message'=>'something went wrong']);

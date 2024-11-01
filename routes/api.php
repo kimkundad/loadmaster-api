@@ -39,7 +39,7 @@ Route::post('/createOrdere', [AuthController::class, 'createOrdere'])->middlewar
 Route::post('/getProvince', [AuthController::class, 'getProvince']);
 Route::post('/myLocation', [AuthController::class, 'myLocation'])->middleware("jwtAuth");
 Route::post('/generate-pdf', [AuthController::class, 'generatePDF'])->middleware("jwtAuth");
-
+Route::post('/notiStatus', [AuthController::class, 'notiStatus'])->middleware("jwtAuth");
 
 //driver
 Route::get('/getOrderDri', [AuthController::class, 'getOrderDri'])->middleware("jwtAuth");
@@ -53,3 +53,8 @@ Route::post('/searchOrder', [AuthController::class, 'searchOrder'])->middleware(
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware("jwtAuth");
 Route::post('/postCancelDanger', [AuthController::class, 'postCancelDanger'])->middleware("jwtAuth");
 Route::get('/getOrderByIDDri/{id}', [AuthController::class, 'getOrderByIDDri'])->middleware("jwtAuth");
+Route::post('/postNotiDri', [AuthController::class, 'postNotiDri'])->middleware("jwtAuth");
+Route::post('/postDoc', [AuthController::class, 'postDoc'])->middleware("jwtAuth");
+Route::get('/getImgDoc/{id}', [AuthController::class, 'getImgDoc'])->middleware("jwtAuth");
+Route::get('/getDoc', [AuthController::class, 'getDoc'])->middleware("jwtAuth");
+Route::post('/UpAvatar', [AuthController::class, 'UpAvatar'])->middleware("jwtAuth");
