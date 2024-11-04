@@ -716,7 +716,7 @@ class AuthController extends Controller
                     $timeLine = [
                         [
                             'id' => '1',
-                            'date' => '04-11-2024 21:56',
+                            'date' => $order->time_step2,
                             'status' => 'อยู่ระหว่างการขนส่ง',
                             'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
                             'active' => false,
@@ -724,7 +724,7 @@ class AuthController extends Controller
                         ],
                         [
                             'id' => '2',
-                            'date' => '04-11-2024 21:56',
+                            'date' => $order->time_step1,
                             'status' => 'กำลังเตรียมพัสดุ',
                             'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
                             'active' => true,
@@ -748,7 +748,7 @@ class AuthController extends Controller
                     $timeLine = [
                         [
                             'id' => '4',
-                            'date' => '04-11-2024 21:56',
+                            'date' => $order->time_step3,
                             'status' => 'จัดส่งสำเร็จ',
                             'description' => 'พัสดุถูกจัดส่งสำเร็จถึงปลายทาง',
                             'active' => true,
@@ -756,7 +756,7 @@ class AuthController extends Controller
                         ],
                         [
                             'id' => '3',
-                            'date' => '04-11-2024 21:56',
+                            'date' => $order->time_step2,
                             'status' => 'อยู่ระหว่างการขนส่ง',
                             'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
                             'active' => false,
@@ -764,7 +764,7 @@ class AuthController extends Controller
                         ],
                         [
                             'id' => '2',
-                            'date' => '04-11-2024 21:56',
+                            'date' => $order->time_step1,
                             'status' => 'กำลังเตรียมพัสดุ',
                             'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
                             'active' => false,
@@ -1205,6 +1205,7 @@ public function postCancelDanger(Request $request)
                     $objs = order::find($request->id);
                     $objs->remark_dri1 = $request['remark_dri1'];
                     $objs->status_dri1 = 1;
+                    $objs->time_step1 = Carbon::now();
                     $objs->save();
 
                 }else if($request->stepNo == 2){
@@ -1452,6 +1453,7 @@ public function postCancelDanger(Request $request)
                 // หากทั้งสองสถานะเป็น 1 อัปเดต order_status เป็น 2
                 $objs = order::find($request->id);
                 $objs->order_status = 2;
+                $objs->time_step3 = Carbon::now();
                 $objs->save();
 
                 return response()->json([
@@ -1561,16 +1563,17 @@ public function postCancelDanger(Request $request)
         try{
             $user = JWTAuth::authenticate($request->token);
 
-            $user = order::findOrFail($request->id);
+            $order = order::findOrFail($request->id);
 
-              if($user->status_dri == 1){
-                  $user->status_dri = 0;
+              if($order->status_dri == 1){
+                  $order->status_dri = 0;
 
               } else {
-                  $user->status_dri = 1;
+                  $order->status_dri = 1;
               }
 
-              $user->newStatus = $request->newStatus;
+              $order->newStatus = $request->newStatus;
+              $order->time_step2 = Carbon::now();
 
 
                 return response()->json([
