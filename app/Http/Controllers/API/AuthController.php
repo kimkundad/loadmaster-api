@@ -704,7 +704,7 @@ class AuthController extends Controller
                         ],
                         [
                             'id' => '3',
-                            'date' => '04-11-2024 10:45',
+                            'date' => $order->created_at,
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => false,
@@ -732,7 +732,7 @@ class AuthController extends Controller
                         ],
                         [
                             'id' => '3',
-                            'date' => '04-11-2024 10:45',
+                            'date' => $order->created_at,
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => false,
@@ -772,7 +772,7 @@ class AuthController extends Controller
                         ],
                         [
                             'id' => '1',
-                            'date' => '04-11-2024 10:45',
+                            'date' => $order->created_at,
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => false,
@@ -785,7 +785,7 @@ class AuthController extends Controller
                     $timeLine = [
                         [
                             'id' => '1',
-                            'date' => '04-11-2024 10:45',
+                            'date' => $order->created_at,
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => true,
