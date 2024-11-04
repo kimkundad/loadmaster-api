@@ -567,6 +567,8 @@ class AuthController extends Controller
             $objs->b_phone = $request['phone2'];
             $objs->b_recive_name = $request['name2'];
             $objs->waffles = $request['warb'];
+            $objs->machinery = $request['machinery'];
+            $objs->service = $request['service'];
             $objs->save();
 
             return response()->json([
