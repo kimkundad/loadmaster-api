@@ -683,6 +683,7 @@ class AuthController extends Controller
             if ($order) {
                 if ($order->order_status == 1) {
                     // Timeline for code_order = 1
+
                     $timeLine = [
                         [
                             'id' => '4',
@@ -695,13 +696,14 @@ class AuthController extends Controller
                         [
                             'id' => '1',
                             'date' => '04-11-2024 21:56',
-                            'status' => 'รอการจัดส่ง',
-                            'description' => 'พัสดุออกจากศูนย์คัดแยกสินค้า ไปยัง HSAPA-A - สะพานสูง',
+                            'status' => 'อยู่ระหว่างการขนส่ง',
+                            'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
                             'active' => true,
                             'icon' => 'local-shipping'
                         ],
-                        // Add more timeline entries if needed
                     ];
+
+
                 } else if ($order->order_status == 2) {
                     // Timeline for code_order = 2
                     $timeLine = [
@@ -730,7 +732,7 @@ class AuthController extends Controller
                             'date' => '04-11-2024 10:45',
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
-                            'active' => false,
+                            'active' => true,
                             'icon' => 'pending'
                         ],
                     ];
