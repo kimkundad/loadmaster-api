@@ -684,15 +684,8 @@ class AuthController extends Controller
                 if ($order->order_status == 1) {
                     // Timeline for code_order = 1
 
+                    if ($order->status_dri == 1) {
                     $timeLine = [
-                        [
-                            'id' => '1',
-                            'date' => '04-11-2024 21:56',
-                            'status' => 'อยู่ระหว่างการขนส่ง',
-                            'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
-                            'active' => true,
-                            'icon' => 'inventory'
-                        ],
                         [
                             'id' => '1',
                             'date' => '04-11-2024 21:56',
@@ -702,7 +695,43 @@ class AuthController extends Controller
                             'icon' => 'local-shipping'
                         ],
                         [
-                            'id' => '4',
+                            'id' => '2',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'กำลังเตรียมพัสดุ',
+                            'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
+                            'active' => false,
+                            'icon' => 'inventory'
+                        ],
+                        [
+                            'id' => '3',
+                            'date' => '04-11-2024 10:45',
+                            'status' => 'กำลังดำเนินการ',
+                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
+                            'active' => false,
+                            'icon' => 'pending'
+                        ],
+                    ];
+                }else{
+
+                    $timeLine = [
+                        [
+                            'id' => '1',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'อยู่ระหว่างการขนส่ง',
+                            'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
+                            'active' => false,
+                            'icon' => 'local-shipping'
+                        ],
+                        [
+                            'id' => '2',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'กำลังเตรียมพัสดุ',
+                            'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
+                            'active' => true,
+                            'icon' => 'inventory'
+                        ],
+                        [
+                            'id' => '3',
                             'date' => '04-11-2024 10:45',
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
@@ -711,26 +740,45 @@ class AuthController extends Controller
                         ],
                     ];
 
+                }
+
 
                 } else if ($order->order_status == 2) {
                     // Timeline for code_order = 2
                     $timeLine = [
                         [
-                            'id' => '2',
-                            'date' => '04-11-2024 20:30',
-                            'status' => 'รอการจัดส่ง',
-                            'description' => 'พัสดุกำลังจัดเตรียมเพื่อออกจากคลังสินค้า',
-                            'active' => true,
-                            'icon' => 'package'
-                        ],
-                        [
-                            'id' => '3',
+                            'id' => '4',
                             'date' => '04-11-2024 21:56',
                             'status' => 'จัดส่งสำเร็จ',
                             'description' => 'พัสดุถูกจัดส่งสำเร็จถึงปลายทาง',
-                            'active' => false,
+                            'active' => true,
                             'icon' => 'done'
                         ],
+                        [
+                            'id' => '1',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'อยู่ระหว่างการขนส่ง',
+                            'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
+                            'active' => false,
+                            'icon' => 'local-shipping'
+                        ],
+                        [
+                            'id' => '1',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'กำลังเตรียมพัสดุ',
+                            'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
+                            'active' => false,
+                            'icon' => 'inventory'
+                        ],
+                        [
+                            'id' => '4',
+                            'date' => '04-11-2024 10:45',
+                            'status' => 'กำลังดำเนินการ',
+                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
+                            'active' => false,
+                            'icon' => 'pending'
+                        ],
+
                     ];
                 } else if ($order->order_status == 0) {
                     // Timeline for code_order = 0
