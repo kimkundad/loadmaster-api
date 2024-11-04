@@ -301,6 +301,44 @@ class AuthController extends Controller
 
     }
 
+    public function sendOtp(){
+
+        $data = $request->validate([
+            'verification_code' => ['required', 'numeric'],
+            'phone_number' => ['required', 'string'],
+        ]);
+
+        $cleaned_phone_number = str_replace('+66', '', $data['phone_number']);
+
+        $user = DB::table('users')
+            ->where('phone', $cleaned_phone_number)
+            ->where('otp', $data['verification_code'])
+            ->count();
+
+            if ($user > 0) {
+                // Clean phone number by removing country code (assuming Thailand's +66)
+
+                return response()->json([
+                    'success' => true,
+                    ]);
+
+            }else{
+
+                return response()->json([
+                    'success' => false,
+                    ]);
+            }
+
+
+
+        // If verification failed due to an invalid code
+        return response()->json([
+            'success' => false,
+            'error' => 'Invalid verification code entered!',
+        ], 401);
+
+    }
+
 
     public function verify(Request $request)
     {

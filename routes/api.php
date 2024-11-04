@@ -19,6 +19,7 @@ use App\Http\Controllers\API\AuthController; // Import the AuthController
 Route::post('/login',  [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify', [AuthController::class, 'verify']);
+Route::post('/sendOtp', [AuthController::class, 'sendOtp']);
 Route::post('/sms', [AuthController::class, 'sms']);
 Route::post('/reverify', [AuthController::class, 'reverify']);
 Route::post('/reserPass', [AuthController::class, 'reserPass']);
