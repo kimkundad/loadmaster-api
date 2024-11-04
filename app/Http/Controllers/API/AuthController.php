@@ -301,7 +301,7 @@ class AuthController extends Controller
 
     }
 
-    public function sendOtp(){
+    public function sendOtp(Request $request){
 
         $data = $request->validate([
             'verification_code' => ['required', 'numeric'],
