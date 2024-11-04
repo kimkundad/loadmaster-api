@@ -685,9 +685,17 @@ class AuthController extends Controller
                     // Timeline for code_order = 1
                     $timeLine = [
                         [
+                            'id' => '4',
+                            'date' => '04-11-2024 10:45',
+                            'status' => 'กำลังดำเนินการ',
+                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
+                            'active' => false,
+                            'icon' => 'pending'
+                        ],
+                        [
                             'id' => '1',
                             'date' => '04-11-2024 21:56',
-                            'status' => 'อยู่ระหว่างการขนส่ง',
+                            'status' => 'รอการจัดส่ง',
                             'description' => 'พัสดุออกจากศูนย์คัดแยกสินค้า ไปยัง HSAPA-A - สะพานสูง',
                             'active' => true,
                             'icon' => 'local-shipping'
@@ -700,7 +708,7 @@ class AuthController extends Controller
                         [
                             'id' => '2',
                             'date' => '04-11-2024 20:30',
-                            'status' => 'กำลังเตรียมพัสดุ',
+                            'status' => 'รอการจัดส่ง',
                             'description' => 'พัสดุกำลังจัดเตรียมเพื่อออกจากคลังสินค้า',
                             'active' => true,
                             'icon' => 'package'
@@ -720,8 +728,8 @@ class AuthController extends Controller
                         [
                             'id' => '4',
                             'date' => '04-11-2024 10:45',
-                            'status' => 'รอการจัดส่ง',
-                            'description' => 'คำสั่งซื้อของคุณอยู่ในคิวสำหรับการจัดส่ง',
+                            'status' => 'กำลังดำเนินการ',
+                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => false,
                             'icon' => 'pending'
                         ],
