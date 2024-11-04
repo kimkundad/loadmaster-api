@@ -795,6 +795,7 @@ class AuthController extends Controller
                 }
             }
 
+
             return response()->json([
                 'order' => $order,
                 'img' => $ImgStep,
