@@ -691,6 +691,14 @@ class AuthController extends Controller
                             'status' => 'อยู่ระหว่างการขนส่ง',
                             'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
                             'active' => true,
+                            'icon' => 'inventory'
+                        ],
+                        [
+                            'id' => '1',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'อยู่ระหว่างการขนส่ง',
+                            'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
+                            'active' => true,
                             'icon' => 'local-shipping'
                         ],
                         [
