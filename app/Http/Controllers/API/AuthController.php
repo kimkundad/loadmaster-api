@@ -678,10 +678,62 @@ class AuthController extends Controller
             $ImgStep = ImgStep::where('order_id', $id)->where('stepNo', 1)->get();
             $ImgStep2 = ImgStep::where('order_id', $id)->where('stepNo', 2)->get();
 
+            $timeLine = [];
+
+            if ($order) {
+                if ($order->order_status == 1) {
+                    // Timeline for code_order = 1
+                    $timeLine = [
+                        [
+                            'id' => '1',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'อยู่ระหว่างการขนส่ง',
+                            'description' => 'พัสดุออกจากศูนย์คัดแยกสินค้า ไปยัง HSAPA-A - สะพานสูง',
+                            'active' => true,
+                            'icon' => 'local-shipping'
+                        ],
+                        // Add more timeline entries if needed
+                    ];
+                } else if ($order->order_status == 2) {
+                    // Timeline for code_order = 2
+                    $timeLine = [
+                        [
+                            'id' => '2',
+                            'date' => '04-11-2024 20:30',
+                            'status' => 'กำลังเตรียมพัสดุ',
+                            'description' => 'พัสดุกำลังจัดเตรียมเพื่อออกจากคลังสินค้า',
+                            'active' => true,
+                            'icon' => 'package'
+                        ],
+                        [
+                            'id' => '3',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'จัดส่งสำเร็จ',
+                            'description' => 'พัสดุถูกจัดส่งสำเร็จถึงปลายทาง',
+                            'active' => false,
+                            'icon' => 'done'
+                        ],
+                    ];
+                } else if ($order->order_status == 0) {
+                    // Timeline for code_order = 0
+                    $timeLine = [
+                        [
+                            'id' => '4',
+                            'date' => '04-11-2024 10:45',
+                            'status' => 'รอการจัดส่ง',
+                            'description' => 'คำสั่งซื้อของคุณอยู่ในคิวสำหรับการจัดส่ง',
+                            'active' => false,
+                            'icon' => 'pending'
+                        ],
+                    ];
+                }
+            }
+
             return response()->json([
                 'order' => $order,
                 'img' => $ImgStep,
-                'img2' => $ImgStep2
+                'img2' => $ImgStep2,
+                'timeline' => $timeLine
             ]);
 
         }catch(Exception $e){
@@ -704,10 +756,13 @@ class AuthController extends Controller
             $ImgStep = ImgStep::where('order_id', $id)->where('stepNo', 1)->get();
             $ImgStep2 = ImgStep::where('order_id', $id)->where('stepNo', 2)->get();
 
+            $timeline = [];
+
             return response()->json([
                 'order' => $order,
                 'img' => $ImgStep,
-                'img2' => $ImgStep2
+                'img2' => $ImgStep2,
+                'timeline' => $timeline
             ]);
 
         }catch(Exception $e){
