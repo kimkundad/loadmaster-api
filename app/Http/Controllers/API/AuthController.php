@@ -755,7 +755,7 @@ class AuthController extends Controller
                             'icon' => 'done'
                         ],
                         [
-                            'id' => '1',
+                            'id' => '3',
                             'date' => '04-11-2024 21:56',
                             'status' => 'อยู่ระหว่างการขนส่ง',
                             'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
@@ -763,7 +763,7 @@ class AuthController extends Controller
                             'icon' => 'local-shipping'
                         ],
                         [
-                            'id' => '1',
+                            'id' => '2',
                             'date' => '04-11-2024 21:56',
                             'status' => 'กำลังเตรียมพัสดุ',
                             'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
@@ -771,7 +771,7 @@ class AuthController extends Controller
                             'icon' => 'inventory'
                         ],
                         [
-                            'id' => '4',
+                            'id' => '1',
                             'date' => '04-11-2024 10:45',
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
@@ -784,7 +784,7 @@ class AuthController extends Controller
                     // Timeline for code_order = 0
                     $timeLine = [
                         [
-                            'id' => '4',
+                            'id' => '1',
                             'date' => '04-11-2024 10:45',
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
