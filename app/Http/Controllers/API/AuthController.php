@@ -686,20 +686,20 @@ class AuthController extends Controller
 
                     $timeLine = [
                         [
-                            'id' => '4',
-                            'date' => '04-11-2024 10:45',
-                            'status' => 'กำลังดำเนินการ',
-                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
-                            'active' => false,
-                            'icon' => 'pending'
-                        ],
-                        [
                             'id' => '1',
                             'date' => '04-11-2024 21:56',
                             'status' => 'อยู่ระหว่างการขนส่ง',
                             'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
                             'active' => true,
                             'icon' => 'local-shipping'
+                        ],
+                        [
+                            'id' => '4',
+                            'date' => '04-11-2024 10:45',
+                            'status' => 'กำลังดำเนินการ',
+                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
+                            'active' => false,
+                            'icon' => 'pending'
                         ],
                     ];
 
