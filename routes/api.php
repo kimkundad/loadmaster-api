@@ -42,6 +42,8 @@ Route::post('/myLocation', [AuthController::class, 'myLocation'])->middleware("j
 Route::post('/generate-pdf', [AuthController::class, 'generatePDF'])->middleware("jwtAuth");
 Route::post('/notiStatus', [AuthController::class, 'notiStatus'])->middleware("jwtAuth");
 
+Route::post('/updateReceipt', [AuthController::class, 'updateReceipt'])->middleware("jwtAuth");
+
 //driver
 Route::get('/getOrderDri', [AuthController::class, 'getOrderDri'])->middleware("jwtAuth");
 Route::post('/postImgStep1', [AuthController::class, 'postImgStep1'])->middleware("jwtAuth");
