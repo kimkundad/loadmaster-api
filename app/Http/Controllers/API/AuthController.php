@@ -992,21 +992,20 @@ class AuthController extends Controller
         try {
             $user = JWTAuth::authenticate($request->token);
 
-            // Validate the incoming request
-            $validatedData = $request->validate([
-                'Receiptname' => 'required',
-                'Receiptphone' => 'required',
-                'Receiptemail' => 'required',
-                'Receiptaddress' => 'required',
-            ]);
-
             // Update the user's profile
-            $user->update($validatedData);
+            $user->Receiptname = $request->Receiptname;
+            $user->Receiptphone = $request->Receiptphone;
+            $user->Receiptemail = $request->Receiptemail;
+            $user->Receiptaddress = $request->Receiptaddress;
+            $user->save();
+
+            $userx = JWTAuth::authenticate($request->token);
 
             return response()->json([
-                'user' => $user,
+                'user' => $userx,
                 'msgStatus' => 200,
-                'message' => 'Profile updated successfully'
+                'message' => 'Profile updated successfully',
+                'id' => $userx->id,
             ]);
 
         } catch (Exception $e) {
