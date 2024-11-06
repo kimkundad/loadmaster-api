@@ -171,8 +171,7 @@
                 305 ซอยพระรามที่ 2 แขวงบางมด เขตจอมทอง กรุงเทพมหานคร 10150<br>
                 โทรศัพท์: 099-276-2487<br>
                 ลขประจำตัวผู้เสียภาษี: 0105567110129</p>
-                <p style="font-weight: Regular;">ทดลอง 555+
-                </p>
+
             </div>
 
         </div>
@@ -181,14 +180,14 @@
         <table style="width: 100%; margin-top: 20px;">
             <tr>
                 <td style="width: 65%; vertical-align: top;">
-                    <h3>บริษัท ทัพพีพิศ พิลส์ จำกัด 2 PAKNAM</h3>
-                    <b class="add_cus mt-5 prompt-regular">ที่อยู่ : เลขที่ 75/19-20 ถนนศรีสมุทร ตำบลปากน้ำ อำเภยเมืองสมุทรปราการ จังหวัดสมุทรปราการ 10270</b>
-                    <p class="add_cus mt-5">โทร : 0625418356</p>
+                    <h3>{{ $Receiptname }}</h3>
+                    <b class="add_cus mt-5 prompt-regular">ที่อยู่ : {{ $Receiptaddress }}</b>
+                    <p class="add_cus mt-5">โทร : {{ $Receiptphone }}</p>
                     <p class="add_cus mt-5">เลขประจำตัวผู้เสียภาษี : 0125566039617</p>
                 </td>
                 <td style="width: 35%; vertical-align: top; text-align: right;">
-                    <p class="add_cus mt-5">เลขที่ : LML202410004</p>
-                    <p class="add_cus mt-5">วันที่  : 09/10/2024</p>
+                    <p class="add_cus mt-5">เลขที่ : {{ $code_order }}</p>
+                    <p class="add_cus mt-5">วันที่  : {{ $date }}</p>
                 </td>
             </tr>
         </table>
@@ -208,21 +207,21 @@
                     <td style=" text-align: center">1</td>
                     <td style=" text-align: center">xxx</td>
                     <td style=" text-align: center">ค่าขนส่ง</td>
-                    <td style="text-align: center">3,284.00</td>
+                    <td style="text-align: center">{{ $price }}</td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
                     <td colspan="3" class="total">รวมมูลค่าสินค้า:</td>
-                    <td >$320.00</td>
+                    <td >{{ $price }}</td>
                 </tr>
                 <tr>
                     <td colspan="3" class="total">ภาษีมูลค่าเพิ่ม ณ อัตรา 1%:</td>
-                    <td >$64.00</td>
+                    <td >0.00</td>
                 </tr>
                 <tr>
                     <td colspan="3" class="total total-value">รวมจำนวนเงินทั้งสิ้น:</td>
-                    <td  class="total-value">$384.00</td>
+                    <td  class="total-value">{{ $price }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -252,7 +251,7 @@
                                                 (ผู้รับเงิน)
                                             </div>
                                             <div style="width: 50%; float:right; font-size: 12px; margin-top: 15px">
-                                                09/10/2024
+                                                {{ $date }}
                                                 <br>
                                                 (วันที่ออกเอกสาร)
                                             </div>

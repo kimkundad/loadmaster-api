@@ -1455,6 +1455,13 @@ public function postCancelDanger(Request $request)
 
             $data = [
                 'title' => $objs->code_order,
+                'Receiptname' => $user->Receiptname,
+                'Receiptphone' => $user->Receiptphone,
+                'Receiptemail' => $user->Receiptemail,
+                'Receiptaddress' => $user->Receiptaddress,
+                'price' => $objs->price,
+                'date' => Carbon::now(),
+                'code_order' => $objs->code_order,
             ];
 
             $pdf = \PDF::loadView('document', $data)
