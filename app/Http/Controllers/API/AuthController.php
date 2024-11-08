@@ -571,6 +571,7 @@ class AuthController extends Controller
             $objs->waffles = $request['warb'];
             $objs->machinery = $request['machinery'];
             $objs->service = $request['service'];
+            $objs->service2 = $request['service2'];
             $objs->save();
 
             return response()->json([
@@ -585,6 +586,8 @@ class AuthController extends Controller
         }
 
     }
+
+
 
     public function myLocation(Request $request){
 
@@ -1213,6 +1216,40 @@ public function postCancelDanger(Request $request)
                     'user' => $user,
                     'message' => 'Avatar updated successfully.'
                 ]);
+
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function cancelInvoice(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = order::where('driver_id', $user->id)
+                    ->where('id', $request->id)
+                    ->first();
+
+            if($order){
+
+                    $objs = order::find($request->id);
+                    $objs->order_status = 4;
+                    $objs->save();
+
+                return response()->json([
+                    'success' => true
+                ]);
+
+            }else{
+
+                return response()->json([
+                    'success' => false
+                ]);
+
+            }
 
 
         }catch(Exception $e){
