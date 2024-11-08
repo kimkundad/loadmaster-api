@@ -183,11 +183,11 @@
                     <h3>{{ $Receiptname }}</h3>
                     <b class="add_cus mt-5 prompt-regular">ที่อยู่ : {{ $Receiptaddress }}</b>
                     <p class="add_cus mt-5">โทร : {{ $Receiptphone }}</p>
-                    <p class="add_cus mt-5">เลขประจำตัวผู้เสียภาษี : 0125566039617</p>
+                    <p class="add_cus mt-5">เลขประจำตัวผู้เสียภาษี : {{ $ReceiptTax }}</p>
                 </td>
                 <td style="width: 35%; vertical-align: top; text-align: right;">
                     <p class="add_cus mt-5">เลขที่ : {{ $code_order }}</p>
-                    <p class="add_cus mt-5">วันที่  : {{ $date }}</p>
+                    <p class="add_cus mt-5">วันที่  : {{ $created_at }}</p>
                 </td>
             </tr>
         </table>
@@ -216,8 +216,8 @@
                     <td >{{ $price }}</td>
                 </tr>
                 <tr>
-                    <td colspan="3" class="total">ภาษีมูลค่าเพิ่ม ณ อัตรา 1%:</td>
-                    <td >0.00</td>
+                    <td colspan="3" class="total">ภาษีมูลค่าเพิ่ม ณ ที่จ่าย อัตรา {{$taxText}}%:</td>
+                    <td >{{ $tax }}</td>
                 </tr>
                 <tr>
                     <td colspan="3" class="total total-value">รวมจำนวนเงินทั้งสิ้น:</td>

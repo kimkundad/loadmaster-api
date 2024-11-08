@@ -997,6 +997,7 @@ class AuthController extends Controller
             $user->Receiptphone = $request->Receiptphone;
             $user->Receiptemail = $request->Receiptemail;
             $user->Receiptaddress = $request->Receiptaddress;
+            $user->ReceiptTax = $request->ReceiptTax;
             $user->ReceiptStatus = 1;
             $user->save();
 
@@ -1454,15 +1455,27 @@ public function postCancelDanger(Request $request)
 
             $objs = order::where('id', $request->id)->where('user_id', $user->id)->first();
 
+            $set = DB::table('settings')
+            ->where('id', 1)
+            ->first();
+
+            $taxRate = $set->tax / 100; // Convert `1` to `0.01` (1%)
+            $tax = $objs->price * $taxRate; // Calculate tax based on the rate
+
+
             $data = [
                 'title' => $objs->code_order,
                 'Receiptname' => $user->Receiptname,
                 'Receiptphone' => $user->Receiptphone,
                 'Receiptemail' => $user->Receiptemail,
                 'Receiptaddress' => $user->Receiptaddress,
+                'ReceiptTax' => $user->ReceiptTax,
                 'price' => $objs->price,
                 'date' => Carbon::now(),
                 'code_order' => $objs->code_order,
+                'created_at' => $objs->created_at,
+                'taxText' => $set->text,
+                'tax' => $tax,
             ];
 
             $pdf = \PDF::loadView('document', $data)
