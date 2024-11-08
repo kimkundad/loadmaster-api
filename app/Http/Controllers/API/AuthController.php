@@ -1453,7 +1453,7 @@ public function postCancelDanger(Request $request)
 
     public function generatePDFtoMail(Request $request)
 {
-
+    try {
         // Authenticate user from JWT token
         $user = JWTAuth::authenticate($request->token);
 
@@ -1503,7 +1503,10 @@ public function postCancelDanger(Request $request)
 
         return response()->json(['success' => true, 'message' => 'PDF sent to email successfully']);
 
-
+    } catch (\Exception $e) {
+        \Log::error('PDF Generation Error: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Something went wrong'], 500);
+    }
 }
 
 
