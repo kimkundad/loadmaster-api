@@ -1229,7 +1229,7 @@ public function postCancelDanger(Request $request)
         try{
             $user = JWTAuth::authenticate($request->token);
 
-            $order = order::where('driver_id', $user->id)
+            $order = order::where('user_id', $user->id)
                     ->where('id', $request->id)
                     ->first();
 
