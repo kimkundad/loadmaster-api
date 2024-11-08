@@ -1490,6 +1490,8 @@ public function postCancelDanger(Request $request)
             'tax' => $tax,
         ];
 
+        return response()->json(['success' => $data]);
+
         // Load the PDF view with the prepared data
         $pdf = \PDF::loadView('document', $data)
             ->setPaper('a4', 'portrait'); // Optional: Set paper size and orientation
