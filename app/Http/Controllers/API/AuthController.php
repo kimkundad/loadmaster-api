@@ -1448,46 +1448,62 @@ public function postCancelDanger(Request $request)
         }
     }
 
-    public function generatePDF(Request $request){
+    public function generatePDF(Request $request)
+{
+    try {
+        // Authenticate user from JWT token
+        $user = JWTAuth::authenticate($request->token);
 
-        try{
-            $user = JWTAuth::authenticate($request->token);
+        // Fetch order details for the specified order ID and user ID
+        $objs = order::where('id', $request->id)->where('user_id', $user->id)->first();
 
-            $objs = order::where('id', $request->id)->where('user_id', $user->id)->first();
-
-            $set = DB::table('settings')
-            ->where('id', 1)
-            ->first();
-
-            $taxRate = $set->tax / 100; // Convert `1` to `0.01` (1%)
-            $tax = $objs->price * $taxRate; // Calculate tax based on the rate
-
-
-            $data = [
-                'title' => $objs->code_order,
-                'Receiptname' => $user->Receiptname,
-                'Receiptphone' => $user->Receiptphone,
-                'Receiptemail' => $user->Receiptemail,
-                'Receiptaddress' => $user->Receiptaddress,
-                'ReceiptTax' => $user->ReceiptTax,
-                'price' => $objs->price,
-                'date' => Carbon::now(),
-                'code_order' => $objs->code_order,
-                'created_at' => $objs->created_at,
-                'taxText' => $set->text,
-                'tax' => $tax,
-            ];
-
-            $pdf = \PDF::loadView('document', $data)
-                ->setPaper('a4', 'portrait'); // Optional: Set paper size and orientation
-             //  return view('admin.orders.document', $data);
-              return $pdf->download($objs->id.'.pdf');
-
-        }catch(Exception $e){
-            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        // Check if order exists
+        if (!$objs) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
         }
 
+        // Fetch tax settings
+        $set = DB::table('settings')->where('id', 1)->first();
+
+        // Check if settings exist
+        if (!$set) {
+            return response()->json(['success' => false, 'message' => 'Settings not found'], 404);
+        }
+
+        // Calculate tax based on rate from settings
+        $taxRate = $set->tax / 100; // Convert tax rate (e.g., `1` becomes `0.01`)
+        $tax = $objs->price * $taxRate;
+
+        // Prepare data for PDF
+        $data = [
+            'title' => $objs->code_order,
+            'Receiptname' => $user->Receiptname,
+            'Receiptphone' => $user->Receiptphone,
+            'Receiptemail' => $user->Receiptemail,
+            'Receiptaddress' => $user->Receiptaddress,
+            'ReceiptTax' => $user->ReceiptTax,
+            'price' => $objs->price,
+            'date' => Carbon::now(),
+            'code_order' => $objs->code_order,
+            'created_at' => $objs->created_at,
+            'taxText' => $set->text,
+            'tax' => $tax,
+        ];
+
+        // Load the PDF view with the prepared data
+        $pdf = \PDF::loadView('document', $data)
+            ->setPaper('a4', 'portrait'); // Optional: Set paper size and orientation
+
+        // Download the PDF file
+        return $pdf->download($objs->id . '.pdf');
+
+    } catch (\Exception $e) {
+        // Log the error for debugging
+        \Log::error('PDF Generation Error: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Something went wrong'], 500);
     }
+}
+
 
     public function postStatusDri(Request $request) {
         try {
