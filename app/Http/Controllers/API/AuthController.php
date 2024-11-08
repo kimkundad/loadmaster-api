@@ -1488,6 +1488,8 @@ public function postCancelDanger(Request $request)
             'tax' => $tax,
         ];
 
+        return response()->json(['data' => $data, ]);
+
         $pdf = \PDF::loadView('document', $data)->setPaper('a4', 'portrait');
         $pdfContent = $pdf->output();
 
