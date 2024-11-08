@@ -1470,6 +1470,7 @@ public function postCancelDanger(Request $request)
             return response()->json(['success' => false, 'message' => 'Settings not found'], 404);
         }
 
+
         $taxRate = $set->tax / 100;
         $tax = $objs->price * $taxRate;
 
