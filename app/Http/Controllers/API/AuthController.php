@@ -22,6 +22,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use PDF;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PDFMail;
 
 class AuthController extends Controller
 {
@@ -1448,6 +1450,63 @@ public function postCancelDanger(Request $request)
         }
     }
 
+
+    public function generatePDFtoMail(Request $request)
+{
+    try {
+        // Authenticate user from JWT token
+        $user = JWTAuth::authenticate($request->token);
+
+        // Fetch order details for the specified order ID and user ID
+        $objs = order::where('id', $request->id)->where('user_id', $user->id)->first();
+
+        if (!$objs) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+
+        $set = DB::table('settings')->where('id', 1)->first();
+
+        if (!$set) {
+            return response()->json(['success' => false, 'message' => 'Settings not found'], 404);
+        }
+
+        $taxRate = $set->tax / 100;
+        $tax = $objs->price * $taxRate;
+
+        $data = [
+            'title' => $objs->code_order,
+            'Receiptname' => $user->Receiptname,
+            'Receiptphone' => $user->Receiptphone,
+            'Receiptemail' => $user->Receiptemail,
+            'Receiptaddress' => $user->Receiptaddress,
+            'ReceiptTax' => $user->ReceiptTax,
+            'price' => $objs->price,
+            'date' => Carbon::now(),
+            'code_order' => $objs->code_order,
+            'created_at' => $objs->created_at,
+            'taxText' => $set->tax,
+            'tax' => $tax,
+        ];
+
+        $pdf = \PDF::loadView('document', $data)->setPaper('a4', 'portrait');
+        $pdfContent = $pdf->output();
+
+        $emailData = [
+            'title' => 'Your Receipt',
+            'body' => 'ใบเสร็จสำหรับการใช้บริการบน Load Master ของคุณในวันที่ '.$objs->created_at,
+        ];
+
+        Mail::to($user->Receiptemail)->send(new PDFMail($emailData, $pdfContent));
+
+        return response()->json(['success' => true, 'message' => 'PDF sent to email successfully']);
+
+    } catch (\Exception $e) {
+        \Log::error('PDF Generation Error: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Something went wrong'], 500);
+    }
+}
+
+
     public function generatePDF(Request $request)
 {
     try {
@@ -1473,7 +1532,7 @@ public function postCancelDanger(Request $request)
         // Calculate tax based on rate from settings
         $taxRate = $set->tax / 100; // Convert tax rate (e.g., `1` becomes `0.01`)
         $tax = $objs->price * $taxRate;
-        return response()->json(['success' => $set]);
+
         // Prepare data for PDF
         $data = [
             'title' => $objs->code_order,
@@ -1486,11 +1545,10 @@ public function postCancelDanger(Request $request)
             'date' => Carbon::now(),
             'code_order' => $objs->code_order,
             'created_at' => $objs->created_at,
-            'taxText' => $set->text,
+            'taxText' => $set->tax,
             'tax' => $tax,
         ];
 
-        return response()->json(['success' => $data]);
 
         // Load the PDF view with the prepared data
         $pdf = \PDF::loadView('document', $data)

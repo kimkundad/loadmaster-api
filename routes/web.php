@@ -27,3 +27,16 @@ Route::get('/images/{file}', function ($file) {
     }
     return abort(404);
 })->where('file', '.+');
+
+
+Route::get('/send-test-email', function () {
+    $emailData = [
+        'title' => 'Test Email',
+        'body' => 'This is a test email sent using Gmail SMTP in Laravel.',
+    ];
+
+    // Use the PDFMail mailable as an example (optional)
+    Mail::to('kim.kundad@gmail.com')->send(new \App\Mail\PDFMail($emailData, ''));
+
+    return 'Test email sent!';
+});

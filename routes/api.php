@@ -40,6 +40,8 @@ Route::post('/createOrdere', [AuthController::class, 'createOrdere'])->middlewar
 Route::post('/getProvince', [AuthController::class, 'getProvince']);
 Route::post('/myLocation', [AuthController::class, 'myLocation'])->middleware("jwtAuth");
 Route::post('/generate-pdf', [AuthController::class, 'generatePDF'])->middleware("jwtAuth");
+Route::post('/generatePDFtoMail', [AuthController::class, 'generatePDFtoMail'])->middleware("jwtAuth");
+
 Route::post('/notiStatus', [AuthController::class, 'notiStatus'])->middleware("jwtAuth");
 
 Route::post('/updateReceipt', [AuthController::class, 'updateReceipt'])->middleware("jwtAuth");

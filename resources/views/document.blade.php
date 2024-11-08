@@ -205,8 +205,8 @@
             <tbody>
                 <tr>
                     <td style=" text-align: center">1</td>
-                    <td style=" text-align: center">xxx</td>
-                    <td style=" text-align: center">ค่าขนส่ง</td>
+                    <td style=" text-align: center">{{ $code_order }}</td>
+                    <td style=" text-align: center">ค่าบริการขนส่ง</td>
                     <td style="text-align: center">{{ $price }}</td>
                 </tr>
             </tbody>
@@ -221,7 +221,7 @@
                 </tr>
                 <tr>
                     <td colspan="3" class="total total-value">รวมจำนวนเงินทั้งสิ้น:</td>
-                    <td  class="total-value">{{ $price }}</td>
+                    <td  class="total-value">{{ $price + $tax }}</td>
                 </tr>
             </tfoot>
         </table>
