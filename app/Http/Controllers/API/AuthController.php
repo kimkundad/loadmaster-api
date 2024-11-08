@@ -1450,6 +1450,23 @@ public function postCancelDanger(Request $request)
         }
     }
 
+    public function getSetting(){
+
+        try {
+        $set = DB::table('settings')
+                ->select('box_service1', 'box_service2', 'box_service3', 'tax')
+                ->where('id', 1)
+                ->first();
+
+        return response()->json(['set' => $set ]);
+
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Something went wrong'], 500);
+        }
+
+    }
+
 
     public function generatePDFtoMail(Request $request)
 {
