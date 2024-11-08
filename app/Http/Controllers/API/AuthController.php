@@ -997,6 +997,7 @@ class AuthController extends Controller
             $user->Receiptphone = $request->Receiptphone;
             $user->Receiptemail = $request->Receiptemail;
             $user->Receiptaddress = $request->Receiptaddress;
+            $user->ReceiptStatus = 1;
             $user->save();
 
             $userx = JWTAuth::authenticate($request->token);
