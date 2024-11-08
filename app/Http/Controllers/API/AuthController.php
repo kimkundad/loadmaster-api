@@ -1473,7 +1473,7 @@ public function postCancelDanger(Request $request)
         // Calculate tax based on rate from settings
         $taxRate = $set->tax / 100; // Convert tax rate (e.g., `1` becomes `0.01`)
         $tax = $objs->price * $taxRate;
-
+        return response()->json(['success' => $set]);
         // Prepare data for PDF
         $data = [
             'title' => $objs->code_order,
