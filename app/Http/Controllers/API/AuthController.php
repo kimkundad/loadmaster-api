@@ -53,7 +53,6 @@ class AuthController extends Controller
 
             }
 
-            return response()->json(['error'=> $validator]);
 
             $count = DB::table('users')->where('phone', $request->phone)->count();
 
