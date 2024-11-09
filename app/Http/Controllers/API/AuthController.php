@@ -45,11 +45,15 @@ class AuthController extends Controller
                       'c_password' => 'required|same:password',
                      ]);
 
+
+
          if ($validator->fails()) {
 
                return response()->json(['error'=>$validator->errors()], 401);
 
             }
+
+            return response()->json(['error'=> $validator]);
 
             $count = DB::table('users')->where('phone', $request->phone)->count();
 
