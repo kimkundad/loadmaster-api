@@ -439,7 +439,6 @@ class AuthController extends Controller
                       'phone' => 'required',
                       'address' => 'required',
                       'province' => 'required',
-                      'code' => 'required',
                       'timer' => 'required',
                       'admin_branch' => 'required',
                       'selectedLat2' => 'required',
