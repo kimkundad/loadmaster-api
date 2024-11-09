@@ -69,7 +69,9 @@ class AuthController extends Controller
             // $twilio = new Client($twilio_sid, $token);
             // $twilio->verify->v2->services($twilio_verify_sid)
             //     ->verifications
-            //     ->create('+66'.$request->phone, "sms");
+            //     ->create('+66'.$request->phone, "sms"); php artisan config:clear
+
+           // return response()->json(['TWILIO_AUTH_TOKEN'=> $token, 'TWILIO_SID' =>  $twilio_sid]);
 
                 $otp = rand(100000,999999);
 
