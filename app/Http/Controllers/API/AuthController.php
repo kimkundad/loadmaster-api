@@ -51,6 +51,19 @@ class AuthController extends Controller
         return response()->json(['news' => $news]);
     }
 
+    public function getNewsById($id){
+
+        $news = news::where('id', $id)->first();
+
+        // เพิ่ม URL พื้นฐานให้กับภาพ
+        $baseUrl = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/news/';
+
+        $news->image = $baseUrl . $news->image;
+
+        return response()->json(['news' => $news]);
+
+    }
+
     public function getHoliday() {
         $news = holiday::where('day', '>=', Carbon::now())->get();
 
