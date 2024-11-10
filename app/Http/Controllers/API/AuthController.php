@@ -35,9 +35,17 @@ class AuthController extends Controller
         return 'phone'; // Use 'phone' instead of 'email'
     }
 
-    public function getNews(){
+    public function getNews() {
+        $news = news::where('startdate', '<=', Carbon::now())->get();
 
-        $news = news::where('startdate', '<=',Carbon::now())->get();
+        // เพิ่ม URL พื้นฐานให้กับภาพ
+        $baseUrl = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/news/';
+
+        // เพิ่ม URL พื้นฐานให้กับ image ของแต่ละ news
+        $news->transform(function ($item) use ($baseUrl) {
+            $item->image = $baseUrl . $item->image;
+            return $item;
+        });
 
         return response()->json(['news' => $news]);
     }
