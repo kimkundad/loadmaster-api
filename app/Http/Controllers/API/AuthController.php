@@ -10,6 +10,7 @@ use App\Models\branch;
 use App\Models\ImgStep;
 use App\Models\document;
 use App\Models\news;
+use App\Models\holiday;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,23 @@ class AuthController extends Controller
 
         return response()->json(['news' => $news]);
     }
+
+    public function getHoliday() {
+        $news = holiday::where('day', '>=', Carbon::now())->get();
+
+        // เพิ่ม URL พื้นฐานให้กับภาพ
+        $baseUrl = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/holiday/';
+
+        // เพิ่ม URL พื้นฐานให้กับ image ของแต่ละ news
+        $news->transform(function ($item) use ($baseUrl) {
+            $item->image = $baseUrl . $item->image;
+            return $item;
+        });
+
+        return response()->json(['news' => $news]);
+    }
+
+
 
     public function register(Request $request)
     {

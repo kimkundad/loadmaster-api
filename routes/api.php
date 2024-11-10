@@ -25,6 +25,7 @@ Route::post('/reverify', [AuthController::class, 'reverify']);
 Route::post('/reserPass', [AuthController::class, 'reserPass']);
 Route::get('/getSetting', [AuthController::class, 'getSetting']);
 Route::get('/getNews', [AuthController::class, 'getNews']);
+Route::get('/getHoliday', [AuthController::class, 'getHoliday']);
 
 
 Route::get('/logout', [AuthController::class, 'logout'])->middleware("jwtAuth");
