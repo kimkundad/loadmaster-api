@@ -128,6 +128,12 @@ class AuthController extends Controller
                 $client = new Client($twilio_sid, $token);
                 $client->messages->create('+66'.$request->phone, ['from' => $twilio_number, 'body' => $message]);
 
+                $user_type = 0;
+        if($request['role'] == 4){
+            $user_type == 1;
+        }else{
+            $user_type == 0;
+        }
 
         $email = rand(10000000,99999999)."@gmail.com";
         $user = new User();
@@ -137,6 +143,7 @@ class AuthController extends Controller
         $user->email = $email;
         $user->code_user = rand(10000000,99999999);
         $user->otp = $otp;
+        $user->user_type = $user_type;
         $user->password = bcrypt($request->password);
         $user->save();
 
