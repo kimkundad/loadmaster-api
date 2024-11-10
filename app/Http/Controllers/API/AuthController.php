@@ -9,6 +9,7 @@ use App\Models\order;
 use App\Models\branch;
 use App\Models\ImgStep;
 use App\Models\document;
+use App\Models\news;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,13 @@ class AuthController extends Controller
     public function username()
     {
         return 'phone'; // Use 'phone' instead of 'email'
+    }
+
+    public function getNews(){
+
+        $news = news::where('startdate', '<=',Carbon::now())->get();
+
+        return response()->json(['news' => $news]);
     }
 
     public function register(Request $request)

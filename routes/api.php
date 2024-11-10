@@ -24,6 +24,7 @@ Route::post('/sms', [AuthController::class, 'sms']);
 Route::post('/reverify', [AuthController::class, 'reverify']);
 Route::post('/reserPass', [AuthController::class, 'reserPass']);
 Route::get('/getSetting', [AuthController::class, 'getSetting']);
+Route::get('/getNews', [AuthController::class, 'getNews']);
 
 
 Route::get('/logout', [AuthController::class, 'logout'])->middleware("jwtAuth");
