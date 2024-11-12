@@ -1670,7 +1670,7 @@ public function postCancelDanger(Request $request)
             ->setPaper('a4', 'portrait'); // Optional: Set paper size and orientation
 
         // Download the PDF file
-        return $pdf->download($objs->id . '.pdf');
+        return $pdf->download($objs->code_order . '.pdf');
 
     } catch (\Exception $e) {
         // Log the error for debugging
