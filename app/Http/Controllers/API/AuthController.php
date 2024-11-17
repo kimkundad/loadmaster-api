@@ -11,6 +11,8 @@ use App\Models\ImgStep;
 use App\Models\document;
 use App\Models\news;
 use App\Models\holiday;
+use App\Models\setting;
+
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -983,8 +985,9 @@ class AuthController extends Controller
             $objs = order::where('user_id', $user->id)->where('order_status', 2)->where('pay_status', 0)->orderBy('id', 'desc')->get();
 
             $price = order::where('user_id', $user->id)->where('order_status', 2)->where('pay_status', 0)->sum('totalPrice');
-
-            return response()->json(['order' => $objs, 'price' => $price]);
+            $id = 1;
+            $set = setting::find($id);
+            return response()->json(['order' => $objs, 'price' => $price, 'set' => $set]);
 
         }catch(Exception $e){
             return response()->json(['success'=>false,'message'=>'something went wrong']);
