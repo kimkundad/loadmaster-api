@@ -567,6 +567,20 @@ class AuthController extends Controller
 
     }
 
+    public function formatDateThai($date)
+    {
+        $date = Carbon::parse($date)->addDays(2); // เพิ่ม 2 วันจากวันที่ที่ให้มา
+        $day = $date->day;
+        $month = $date->format('n'); // ใช้เลขเดือน 1-12
+        $year = $date->year + 543; // แปลงเป็น พ.ศ.
+
+        // ชื่อเดือนภาษาไทย
+        $thaiMonths = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+        $monthThai = $thaiMonths[$month];
+
+        return "$day $monthThai $year";
+    }
+
     public function createOrdere(Request $request){
 
         $validator = Validator::make($request->all(),
@@ -641,6 +655,8 @@ class AuthController extends Controller
             $objs->service = $request['service'];
             $objs->service2 = $request['service2'];
             $objs->totalPrice = $request['price']-$tax;
+            $objs->useDate = $this->formatDateThai(Carbon::now());
+            $objs->payDate = $this->formatDateThai(Carbon::now()->addDays(2));
             $objs->save();
 
             return response()->json([
@@ -952,6 +968,24 @@ class AuthController extends Controller
             $user = JWTAuth::authenticate($request->token);
             $objs = order::where('user_id', $user->id)->orderBy('id', 'desc')->get();
             return response()->json(['order' => $objs]);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+
+
+    public function getUserOrderSuccess(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+            $objs = order::where('user_id', $user->id)->where('order_status', 2)->where('pay_status', 0)->orderBy('id', 'desc')->get();
+
+            $price = order::where('user_id', $user->id)->where('order_status', 2)->where('pay_status', 0)->sum('totalPrice');
+
+            return response()->json(['order' => $objs, 'price' => $price]);
 
         }catch(Exception $e){
             return response()->json(['success'=>false,'message'=>'something went wrong']);
