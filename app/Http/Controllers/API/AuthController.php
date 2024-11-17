@@ -414,9 +414,11 @@ class AuthController extends Controller
     $user = DB::table('users')
         ->where('phone', $cleaned_phone_number)
         ->where('otp', $data['verification_code'])
-        ->count();
+        ->first();
 
-        if ($user > 0) {
+        return response()->json([ 'data' => $request->all(), 'user' => $user ]);
+
+        if ($user) {
             // Clean phone number by removing country code (assuming Thailand's +66)
 
 
@@ -426,6 +428,7 @@ class AuthController extends Controller
             //dd($user->p_x);
             // If there's a login attempt, ensure data is passed correctly
             $data['p_x'] = $user->p_x;
+
             $login_data = new Request([
                 'phone' => $cleaned_phone_number,
                 'password' => $data['p_x'],
@@ -602,7 +605,7 @@ class AuthController extends Controller
 
             $objs = new order();
             $objs->user_id = $user->id;
-            $objs->branch_id = 0;
+            $objs->branch_id = $request['branchId'];
             $objs->code_order = $code_order;
             $objs->amount = $request['weight'];
             $objs->price = $request['price'];
