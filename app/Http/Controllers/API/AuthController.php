@@ -659,6 +659,7 @@ class AuthController extends Controller
             $objs->payDate = $this->formatDateThai(Carbon::now()->addDays(2));
             $objs->save();
 
+
             return response()->json([
                 'success' => true,
                 'order' => $objs,
