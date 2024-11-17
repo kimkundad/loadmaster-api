@@ -976,8 +976,6 @@ class AuthController extends Controller
 
     }
 
-
-
     public function getUserOrderSuccess(Request $request){
 
         try{

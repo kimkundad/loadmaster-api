@@ -35,6 +35,8 @@ Route::post('/refresh', [AuthController::class, 'refresh'])->middleware("jwtAuth
 Route::get('/user-profile', [AuthController::class, 'getUser'])->middleware("jwtAuth");
 Route::get('/user-order', [AuthController::class, 'getUserOrder'])->middleware("jwtAuth");
 Route::get('/user-order-cus', [AuthController::class, 'getUserOrderCus'])->middleware("jwtAuth");
+Route::get('/user-order-success', [AuthController::class, 'getUserOrderSuccess'])->middleware("jwtAuth");
+
 Route::get('/user-branch', [AuthController::class, 'getUserBranch'])->middleware("jwtAuth");
 Route::get('/user-branch-{id}', [AuthController::class, 'getUserBranchID'])->middleware("jwtAuth");
 Route::post('/refresh-token', [AuthController::class, 'refresh']);
