@@ -603,6 +603,13 @@ class AuthController extends Controller
             $formattedCount = str_pad($count, 6, '0', STR_PAD_LEFT);  // Result: "0025"
             $code_order = 'LM'.date('Y').''.date('m').date('d').''.$formattedCount;
 
+            $set = DB::table('settings')
+                ->where('id', 1)
+                ->first();
+
+                $taxRate = $set->tax / 100; // Convert tax rate (e.g., `1` becomes `0.01`)
+                $tax = $request['price'] * $taxRate;
+
             $objs = new order();
             $objs->user_id = $user->id;
             $objs->branch_id = $request['branchId'];
@@ -633,6 +640,7 @@ class AuthController extends Controller
             $objs->machinery = $request['machinery'];
             $objs->service = $request['service'];
             $objs->service2 = $request['service2'];
+            $objs->totalPrice = $request['price']-$tax;
             $objs->save();
 
             return response()->json([
@@ -956,7 +964,9 @@ class AuthController extends Controller
         try{
             $user = JWTAuth::authenticate($request->token);
             $objs = order::where('user_id', $user->id)->whereIn('order_status', [0,1])->orderBy('id', 'desc')->get();
-            return response()->json(['order' => $objs]);
+            $price = order::where('user_id', $user->id)->where('order_status', 2)->sum('totalPrice');
+
+            return response()->json(['order' => $objs, 'price', $price]);
 
         }catch(Exception $e){
             return response()->json(['success'=>false,'message'=>'something went wrong']);
