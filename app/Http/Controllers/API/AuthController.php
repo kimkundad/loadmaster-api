@@ -1392,19 +1392,20 @@ public function postCancelDanger(Request $request)
                         'public' // Make the file publicly accessible
                     );
 
-                    $count = payment::count();
-                    $formattedCount = str_pad($count, 6, '0', STR_PAD_LEFT);  // Result: "0025"
-                    $code_payment = 'PAY'.date('Y').''.date('m').date('d').''.$formattedCount;
+                    // สร้างรหัสการชำระเงิน
+                    $count = payment::count() + 1;
+                    $formattedCount = str_pad($count, 6, '0', STR_PAD_LEFT);
+                    $code_payment = 'PAY' . date('Y') . date('m') . date('d') . $formattedCount;
 
                     // Save image info to ImgStep model
-                    $objs = new payment();
-                    $objs->user_id = $user->id;
-                    $objs->order_id = json_encode($request->order_ids);
-                    $objs->image_payment = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/slip/' . $filename;
-                    $objs->code_payment = $code_payment;
-                    $objs->total_pay = $request->total_pay;
-                    $objs->date_payment = $this->formatDateThai(Carbon::now());
-                    $objs->save();
+                    $payment = new payment();
+                    $payment->user_id = $user->id;
+                    $payment->order_id = json_encode($request->order_ids);
+                    $payment->image_payment = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/slip/' . $filename;
+                    $payment->code_payment = $code_payment;
+                    $payment->total_pay = $request->total_pay;
+                    $payment->date_payment = $this->formatDateThai(Carbon::now());
+                    $payment->save();
 
                     // อัปเดตสถานะการชำระเงินของคำสั่งซื้อแต่ละอัน
                     if ($request->order_ids) {
@@ -1418,7 +1419,7 @@ public function postCancelDanger(Request $request)
                     }
 
                 return response()->json([
-                    'order' => $objs,
+                    'order' => $payment,
                     'msgStatus' => 200
                 ]);
 
