@@ -52,6 +52,9 @@ Route::post('/generatePDFtoMail', [AuthController::class, 'generatePDFtoMail'])-
 Route::post('/notiStatus', [AuthController::class, 'notiStatus'])->middleware("jwtAuth");
 Route::post('/cancelInvoice', [AuthController::class, 'cancelInvoice'])->middleware("jwtAuth");
 Route::post('/updateReceipt', [AuthController::class, 'updateReceipt'])->middleware("jwtAuth");
+Route::post('/postPayment', [AuthController::class, 'postPayment'])->middleware("jwtAuth");
+
+
 
 //driver
 Route::get('/getOrderDri', [AuthController::class, 'getOrderDri'])->middleware("jwtAuth");

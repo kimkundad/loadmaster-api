@@ -12,6 +12,7 @@ use App\Models\document;
 use App\Models\news;
 use App\Models\holiday;
 use App\Models\setting;
+use App\Models\payment;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -1362,6 +1363,80 @@ public function postCancelDanger(Request $request)
 
         }catch(Exception $e){
             return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
+    public function postPayment(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            if ($request->hasFile('images')) {
+
+                $image = $request->file('images');
+
+                $img = Image::make($image->getRealPath());
+                    $img->resize(800, 800, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $img->stream(); // Prepare image for upload
+
+                    // Generate a unique filename
+                    $filename = time() . '_' . $image->getClientOriginalName();
+
+                    // Upload the image to DigitalOcean Spaces
+                    Storage::disk('do_spaces')->put(
+                        'loadmaster/slip/' . $filename,
+                        $img->__toString(),  // Ensure the image is in string format
+                        'public' // Make the file publicly accessible
+                    );
+
+                    $count = payment::count();
+                    $formattedCount = str_pad($count, 6, '0', STR_PAD_LEFT);  // Result: "0025"
+                    $code_payment = 'PAY'.date('Y').''.date('m').date('d').''.$formattedCount;
+
+                    // Save image info to ImgStep model
+                    $objs = new payment();
+                    $objs->user_id = $user->id;
+                    $objs->order_id = json_encode($request->order_ids);
+                    $objs->image_payment = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/slip/' . $filename;
+                    $objs->code_payment = $code_payment;
+                    $objs->total_pay = $request->total_pay;
+                    $objs->date_payment = $this->formatDateThai(Carbon::now());
+                    $objs->save();
+
+                    // อัปเดตสถานะการชำระเงินของคำสั่งซื้อแต่ละอัน
+                    if ($request->order_ids) {
+                        foreach ($request->order_ids as $id) {
+                            $order = Order::find($id);
+                            if ($order) {
+                                $order->pay_status = 1;
+                                $order->save();
+                            }
+                        }
+                    }
+
+                return response()->json([
+                    'order' => $objs,
+                    'msgStatus' => 200
+                ]);
+
+            }else{
+
+                return response()->json([
+                    'payment' => null,
+                    'msgStatus' => 100
+                ]);
+
+            }
+
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage() // เพื่อช่วยในการดีบั๊ก
+            ]);
         }
 
     }
