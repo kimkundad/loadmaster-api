@@ -1374,6 +1374,7 @@ public function postCancelDanger(Request $request)
 
             if ($request->hasFile('images')) {
 
+                DB::beginTransaction(); // เริ่มต้นธุรกรรม
                 $image = $request->file('images');
 
                 $img = Image::make($image->getRealPath());
@@ -1407,16 +1408,24 @@ public function postCancelDanger(Request $request)
                     $payment->date_payment = $this->formatDateThai(Carbon::now());
                     $payment->save();
 
-                    // อัปเดตสถานะการชำระเงินของคำสั่งซื้อแต่ละอัน
-                    if ($request->order_ids) {
-                        foreach ($request->order_ids as $id) {
+                    $orderIds = json_decode($request->order_ids, true);
+
+                    // ตรวจสอบว่า order_ids เป็นอาร์เรย์ และอัปเดตสถานะการชำระเงินของคำสั่งซื้อ
+                    if (is_array($orderIds)) {
+                        foreach ($orderIds as $id) {
                             $order = Order::find($id);
                             if ($order) {
                                 $order->pay_status = 1;
                                 $order->save();
+                            } else {
+                                throw new \Exception("Order ID $id not found");
                             }
                         }
+                    } else {
+                        throw new \Exception("Invalid order_ids format");
                     }
+
+            DB::commit(); // บันทึกธุรกรรมถ้าทุกอย่างสำเร็จ
 
                 return response()->json([
                     'order' => $payment,
