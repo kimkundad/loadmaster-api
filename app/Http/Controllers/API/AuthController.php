@@ -1002,7 +1002,7 @@ class AuthController extends Controller
             $user = JWTAuth::authenticate($request->token);
             $objs = order::where('user_id', $user->id)->whereIn('order_status', [0,1])->orderBy('id', 'desc')->get();
 
-            $price = order::where('user_id', $user->id)->where('order_status', 2)->sum('totalPrice');
+            $price = order::where('user_id', $user->id)->where('order_status', 2)->where('pay_status', 0)->sum('totalPrice');
 
             return response()->json(['order' => $objs, 'price' => $price]);
 
