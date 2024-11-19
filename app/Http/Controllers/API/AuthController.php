@@ -1367,6 +1367,29 @@ public function postCancelDanger(Request $request)
 
     }
 
+    public function getPayhistory(Request $request){
+
+        try{
+
+            $user = JWTAuth::authenticate($request->token);
+
+            $payment = payment::where('user_id', $user->id)->get();
+
+            return response()->json([
+                'payment' => $payment,
+                'success' => true
+            ]);
+
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage() // เพื่อช่วยในการดีบั๊ก
+            ]);
+        }
+
+    }
+
     public function postPayment(Request $request){
 
         try{
