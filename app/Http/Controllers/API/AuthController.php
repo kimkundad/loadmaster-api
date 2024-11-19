@@ -1395,11 +1395,13 @@ public function postCancelDanger(Request $request)
             $user = JWTAuth::authenticate($request->token);
 
             $payment = payment::where('user_id', $user->id)->where('id', $id)->first();
-
+            $id = 1;
+            $set = setting::find($id);
             return response()->json([
                 'payment' => $payment,
                 'success' => true,
-                'date' => Carbon::now()
+                'date' => Carbon::now(),
+                'set' => $set
             ]);
 
         }catch(Exception $e){
