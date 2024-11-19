@@ -1397,8 +1397,16 @@ public function postCancelDanger(Request $request)
             $payment = payment::where('user_id', $user->id)->where('id', $id)->first();
             $id = 1;
             $set = setting::find($id);
+            $orderIds = json_decode($payment->order_id);
+            $order_id_clean = str_replace(array('[', ']'), '', $orderIds);
+            $order_id_clean = str_replace('"', '', $order_id_clean);
+            $orderIdsArray = explode(',', $order_id_clean);
+          //  dd($order_id_clean);
+            $order = order::whereIn('id', $orderIdsArray)->get();
+
             return response()->json([
                 'payment' => $payment,
+                'order' => $order,
                 'success' => true,
                 'date' => Carbon::now(),
                 'set' => $set
