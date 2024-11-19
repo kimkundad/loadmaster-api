@@ -562,8 +562,6 @@ class AuthController extends Controller
                     'province' => $province,
                     ]);
 
-
-
             }catch(Exception $e){
                 return response()->json(['success'=>false,'message'=>'something went wrong']);
             }
@@ -572,7 +570,7 @@ class AuthController extends Controller
 
     public function formatDateThai($date)
     {
-        $date = Carbon::parse($date)->addDays(2); // เพิ่ม 2 วันจากวันที่ที่ให้มา
+        $date = Carbon::parse($date); // เพิ่ม 2 วันจากวันที่ที่ให้มา
         $day = $date->day;
         $month = $date->format('n'); // ใช้เลขเดือน 1-12
         $year = $date->year + 543; // แปลงเป็น พ.ศ.
@@ -1377,7 +1375,31 @@ public function postCancelDanger(Request $request)
 
             return response()->json([
                 'payment' => $payment,
-                'success' => true
+                'success' => true,
+                'date' => Carbon::now()
+            ]);
+
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage() // เพื่อช่วยในการดีบั๊ก
+            ]);
+        }
+
+    }
+
+    public function getPayhistoryById(Request $request, $id){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            $payment = payment::where('user_id', $user->id)->where('id', $id)->first();
+
+            return response()->json([
+                'payment' => $payment,
+                'success' => true,
+                'date' => Carbon::now()
             ]);
 
         }catch(Exception $e){

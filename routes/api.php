@@ -37,6 +37,7 @@ Route::get('/user-order', [AuthController::class, 'getUserOrder'])->middleware("
 Route::get('/user-order-cus', [AuthController::class, 'getUserOrderCus'])->middleware("jwtAuth");
 Route::get('/user-order-success', [AuthController::class, 'getUserOrderSuccess'])->middleware("jwtAuth");
 Route::get('/user-pay-history', [AuthController::class, 'getPayhistory'])->middleware("jwtAuth");
+Route::get('/user-pay-historyById/{id}', [AuthController::class, 'getPayhistoryById'])->middleware("jwtAuth");
 
 Route::get('/user-branch', [AuthController::class, 'getUserBranch'])->middleware("jwtAuth");
 Route::get('/user-branch-{id}', [AuthController::class, 'getUserBranchID'])->middleware("jwtAuth");
