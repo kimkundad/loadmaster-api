@@ -619,13 +619,15 @@ class AuthController extends Controller
                 $taxRate = $set->tax / 100; // Convert tax rate (e.g., `1` becomes `0.01`)
                 $tax = $request['price'] * $taxRate;
 
-                return response()->json(['$tax'=>$tax]);
+
 
              if($request['branchId'] == 'undefined'){
                 $branchId = 0;
              }else{
                 $branchId = $request['branchId'];
              }
+
+             return response()->json(['$branchId'=>$branchId]);
 
             $objs = new order();
             $objs->user_id = $user->id;
