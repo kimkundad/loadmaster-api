@@ -627,7 +627,7 @@ class AuthController extends Controller
                 $branchId = $request['branchId'];
              }
 
-             return response()->json(['$branchId'=>$branchId]);
+          //   return response()->json(['$branchId'=>$branchId]);
 
             $objs = new order();
             $objs->user_id = $user->id;
