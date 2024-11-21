@@ -621,10 +621,10 @@ class AuthController extends Controller
 
 
 
-             if($request['branchId'] == 'undefined'){
-                $branchId = 0;
-             }else{
+             if($request['branchId']){
                 $branchId = $request['branchId'];
+             }else{
+                $branchId = 0;
              }
 
              return response()->json(['$branchId'=>$branchId]);
