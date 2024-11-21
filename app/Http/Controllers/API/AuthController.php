@@ -627,9 +627,15 @@ class AuthController extends Controller
 
              //   return response()->json(['$tax'=>$tax], 401);
 
+             if($request['branchId'] == 'undefined'){
+                $branchId = 0;
+             }else{
+                $branchId = $request['branchId'];
+             }
+
             $objs = new order();
             $objs->user_id = $user->id;
-            $objs->branch_id = $request['branchId'];
+            $objs->branch_id = $branchId;
             $objs->code_order = $code_order;
             $objs->amount = $request['weight'];
             $objs->price = $request['price'];
