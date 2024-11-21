@@ -419,7 +419,7 @@ class AuthController extends Controller
         ->where('otp', $data['verification_code'])
         ->first();
 
-        return response()->json([ 'data' => $request->all(), 'user' => $user ]);
+      //  return response()->json([ 'data' => $request->all(), 'user' => $user ]);
 
         if ($user) {
             // Clean phone number by removing country code (assuming Thailand's +66)
