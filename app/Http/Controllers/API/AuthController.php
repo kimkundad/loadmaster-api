@@ -590,12 +590,6 @@ class AuthController extends Controller
                       'longitude' => 'required',
                       'latitude2' => 'required',
                       'longitude2' => 'required',
-                      'adddress' => 'required',
-                      'name' => 'required',
-                      'phone' => 'required',
-                      'adddress2' => 'required',
-                      'name2' => 'required',
-                      'phone2' => 'required',
                       'size' => 'required',
                       'type' => 'required|array', // Validate as array
                       'type.*' => 'string', // Ensure each item in the array is a string
