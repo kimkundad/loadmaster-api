@@ -137,7 +137,7 @@ public function storeMessage(Request $request)
         'room_id' => 'required|integer',
         'sender_id' => 'required|integer', // ตรวจสอบว่าผู้ส่งเป็นใคร
         'message' => 'nullable|string', // ข้อความอาจจะว่างได้ในกรณีที่มีรูปภาพ
-        'image' => 'nullable|image|max:2048' // รองรับการอัปโหลดรูปภาพ ขนาดไม่เกิน 2MB
+        'image' => 'nullable|image|max:8048' // รองรับการอัปโหลดรูปภาพ ขนาดไม่เกิน 2MB
     ]);
 
     // กำหนดค่าเริ่มต้นสำหรับ URL รูปภาพ
