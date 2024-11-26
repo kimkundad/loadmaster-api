@@ -637,6 +637,7 @@ class AuthController extends Controller
             $objs->price = $request['price'];
             $objs->latitude = $request['latitude'];
             $objs->longitude = $request['longitude'];
+            
             $objs->d_lat = $request['latitude'];
             $objs->d_long = $request['longitude'];
             $objs->latitude2 = $request['latitude2'];
