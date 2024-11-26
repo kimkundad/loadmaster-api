@@ -16,9 +16,6 @@ class Messages extends Model
         return $this->belongsTo(Rooms::class, 'room_id');
     }
 
-    public function sender()
-    {
-        return $this->belongsTo(User::class, 'sender_id');
-    }
+
 }
 

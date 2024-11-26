@@ -33,6 +33,7 @@ use Intervention\Image\Facades\Image;
 use PDF;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PDFMail;
+use App\Events\MessageSent;
 
 class AuthController extends Controller
 {
@@ -141,8 +142,14 @@ class AuthController extends Controller
         $message = Messages::create([
             'room_id' => $validated['room_id'],
             'sender_id' => $validated['sender_id'],
-            'message' => $validated['message'],
+            'message' => $validated['message']
         ]);
+
+        $message->sender_name = $request->sender_name;
+
+      //  dd($message);
+
+        event(new MessageSent($message));
 
         return response()->json([
             'success' => true,
