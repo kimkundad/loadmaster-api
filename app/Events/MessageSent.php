@@ -31,7 +31,7 @@ class MessageSent
         $response = $client->post('https://29dc-124-120-26-97.ngrok-free.app/msg', [
             'json' => [
                 'event' => 'new-message',
-                'room_id' => 2, // ระบุห้อง
+                'room_id' => $message->room_id, // ระบุห้อง
                 'data' => $this->message,
             ],
         ]);
