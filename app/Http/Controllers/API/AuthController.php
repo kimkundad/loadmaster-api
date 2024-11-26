@@ -129,34 +129,65 @@ class AuthController extends Controller
 }
 
     // บันทึกข้อความแชทใหม่
-    public function storeMessage(Request $request)
-    {
+    // บันทึกข้อความแชทใหม่
+public function storeMessage(Request $request)
+{
+    // ตรวจสอบข้อมูลที่รับมา
+    $validated = $request->validate([
+        'room_id' => 'required|integer',
+        'sender_id' => 'required|integer', // ตรวจสอบว่าผู้ส่งเป็นใคร
+        'message' => 'nullable|string', // ข้อความอาจจะว่างได้ในกรณีที่มีรูปภาพ
+        'image' => 'nullable|image|max:2048' // รองรับการอัปโหลดรูปภาพ ขนาดไม่เกิน 2MB
+    ]);
 
-        $validated = $request->validate([
-            'room_id' => 'required|integer',
-            'message' => 'required|string',
-            'sender_id' => 'required|integer', // ตรวจสอบว่าผู้ส่งเป็นใคร
-        ]);
+    // กำหนดค่าเริ่มต้นสำหรับ URL รูปภาพ
+    $imageUrl = null;
 
-        // บันทึกข้อความในฐานข้อมูล
-        $message = Messages::create([
-            'room_id' => $validated['room_id'],
-            'sender_id' => $validated['sender_id'],
-            'message' => $validated['message']
-        ]);
+    // หากมีรูปภาพใน request
+    if ($request->hasFile('image')) {
+        $myImg = $request->file('image');
 
-        $message->sender_name = $request->sender_name;
+        // ปรับขนาดรูปภาพ
+        $img = Image::make($myImg->getRealPath());
+        $img->resize(300, 300, function ($constraint) {
+            $constraint->aspectRatio();
+        });
+        $img->stream(); // เตรียมรูปภาพสำหรับอัปโหลด
 
-      //  dd($message);
+        // สร้างชื่อไฟล์ที่ไม่ซ้ำ
+        $filename = time() . '_' . $myImg->getClientOriginalName();
 
-        event(new MessageSent($message));
+        // อัปโหลดรูปภาพไปยัง DigitalOcean Spaces
+        Storage::disk('do_spaces')->put(
+            'loadmaster/chat/' . $filename,
+            $img->__toString(), // ตรวจสอบให้แน่ใจว่ารูปภาพอยู่ในรูปแบบ string
+            'public' // ทำให้ไฟล์สามารถเข้าถึงได้แบบสาธารณะ
+        );
 
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-        ]);
-
+        // สร้าง URL รูปภาพ
+        $imageUrl = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/chat/' . $filename;
     }
+
+    // บันทึกข้อความในฐานข้อมูล
+    $message = Messages::create([
+        'room_id' => $validated['room_id'],
+        'sender_id' => $validated['sender_id'],
+        'message' => $validated['message'] ?? '', // ใส่ข้อความว่างในกรณีที่ไม่มีข้อความ
+        'image_url' => $imageUrl // เพิ่ม URL รูปภาพในฐานข้อมูล
+    ]);
+
+    // เพิ่มชื่อผู้ส่ง (หากจำเป็น)
+    $message->sender_name = $request->sender_name;
+
+    // ส่ง event ข้อความใหม่
+    event(new MessageSent($message));
+
+    return response()->json([
+        'success' => true,
+        'message' => $message,
+    ]);
+}
+
 
 
 
