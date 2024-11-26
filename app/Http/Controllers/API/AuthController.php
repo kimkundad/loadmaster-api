@@ -637,7 +637,7 @@ class AuthController extends Controller
             $objs->price = $request['price'];
             $objs->latitude = $request['latitude'];
             $objs->longitude = $request['longitude'];
-            
+
             $objs->d_lat = $request['latitude'];
             $objs->d_long = $request['longitude'];
             $objs->latitude2 = $request['latitude2'];
@@ -1743,8 +1743,8 @@ public function postCancelDanger(Request $request)
     public function getSetting(){
 
         try {
+
         $set = DB::table('settings')
-                ->select('box_service1', 'box_service2', 'box_service3', 'tax')
                 ->where('id', 1)
                 ->first();
 
