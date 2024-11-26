@@ -112,7 +112,7 @@ class AuthController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-
+          //  dd($roomIds);
 
         // ส่งข้อมูลกลับในรูปแบบ JSON
         return response()->json([
