@@ -75,3 +75,7 @@ Route::post('/postDoc', [AuthController::class, 'postDoc'])->middleware("jwtAuth
 Route::get('/getImgDoc/{id}', [AuthController::class, 'getImgDoc'])->middleware("jwtAuth");
 Route::get('/getDoc', [AuthController::class, 'getDoc'])->middleware("jwtAuth");
 Route::post('/UpAvatar', [AuthController::class, 'UpAvatar'])->middleware("jwtAuth");
+
+Route::get('/createRooms', [AuthController::class, 'createRoom'])->middleware("jwtAuth");
+Route::get('/chat-history', [AuthController::class, 'fetchChatHistory'])->middleware("jwtAuth");
+Route::post('/chat-message', [AuthController::class, 'storeMessage']);

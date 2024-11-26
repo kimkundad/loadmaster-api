@@ -14,6 +14,10 @@ use App\Models\holiday;
 use App\Models\setting;
 use App\Models\payment;
 
+use App\Models\Rooms;
+use App\Models\RoomParticipants;
+use App\Models\Messages;
+
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +57,88 @@ class AuthController extends Controller
 
         return response()->json(['news' => $news]);
     }
+
+    public function createRoom(Request $request){
+
+        try {
+            // รับรองความถูกต้องของ token
+            $user = JWTAuth::authenticate($request->token);
+
+            $existingRoom = Rooms::where('staff_id', $user->id)->first();
+
+            if ($existingRoom) {
+                return response()->json([
+                    'success' => true,
+                    'room' => $existingRoom,
+                ]);
+            }
+
+            $room = Rooms::create(['staff_id' => $user->id]);
+
+            RoomParticipants::create([
+                'room_id' => $room->id,
+                'customer_id' => $user->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'room' => $room,
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+            ], 500);
+        }
+
+    }
+
+    public function fetchChatHistory(Request $request)
+{
+    try {
+        // รับรองความถูกต้องของ token
+        $user = JWTAuth::authenticate($request->token);
+
+        // ค้นหา rooms ที่เกี่ยวข้องกับผู้ใช้
+      //  dd($user);
+            $roomIds = RoomParticipants::where('customer_id', $user->id)->pluck('room_id'); // Customer ID
+
+
+        // ดึงข้อความทั้งหมดใน room ที่เกี่ยวข้อง
+        $messages = Messages::whereIn('room_id', $roomIds)
+            ->with(['room', 'sender'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
+
+        // ส่งข้อมูลกลับในรูปแบบ JSON
+        return response()->json([
+            'success' => true,
+            'messages' => $messages,
+        ]);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong',
+        ], 500);
+    }
+}
+
+    // บันทึกข้อความแชทใหม่
+    public function storeMessage(Request $request)
+    {
+        $message = ChatMessage::create([
+            'user_id' => $request->user_id,
+            'message' => $request->message,
+        ]);
+
+        return response()->json($message);
+    }
+
+
 
     public function getNewsById($id){
 
@@ -2027,6 +2113,8 @@ public function postCancelDanger(Request $request)
         }
 
     }
+
+
 
     public function refresh()
     {
