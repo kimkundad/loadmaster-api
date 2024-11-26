@@ -130,12 +130,25 @@ class AuthController extends Controller
     // บันทึกข้อความแชทใหม่
     public function storeMessage(Request $request)
     {
-        $message = ChatMessage::create([
-            'user_id' => $request->user_id,
-            'message' => $request->message,
+
+        $validated = $request->validate([
+            'room_id' => 'required|integer',
+            'message' => 'required|string',
+            'sender_id' => 'required|integer', // ตรวจสอบว่าผู้ส่งเป็นใคร
         ]);
 
-        return response()->json($message);
+        // บันทึกข้อความในฐานข้อมูล
+        $message = Messages::create([
+            'room_id' => $validated['room_id'],
+            'sender_id' => $validated['sender_id'],
+            'message' => $validated['message'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+        ]);
+
     }
 
 
