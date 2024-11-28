@@ -95,6 +95,36 @@ class AuthController extends Controller
 
     }
 
+    public function PostRatting(Request $request){
+
+        try {
+            // รับรองความถูกต้องของ token
+            $user = JWTAuth::authenticate($request->token);
+
+            $order = order::findOrFail($request->id);
+            $order->user_re_status = 1;
+            $order->ratting = $request->ratting;
+            $order->ratting_comment = $request->ratting_comment;
+
+            // บันทึกการเปลี่ยนแปลงและตรวจสอบความสำเร็จ
+            $order->save();
+
+
+            return response()->json([
+                'success' => true,
+                'messages' => $order,
+            ]);
+
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+            ], 500);
+        }
+
+    }
+
     public function fetchChatHistory(Request $request)
 {
     try {

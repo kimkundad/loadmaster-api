@@ -55,6 +55,7 @@ Route::post('/notiStatus', [AuthController::class, 'notiStatus'])->middleware("j
 Route::post('/cancelInvoice', [AuthController::class, 'cancelInvoice'])->middleware("jwtAuth");
 Route::post('/updateReceipt', [AuthController::class, 'updateReceipt'])->middleware("jwtAuth");
 Route::post('/postPayment', [AuthController::class, 'postPayment'])->middleware("jwtAuth");
+Route::post('/PostRatting', [AuthController::class, 'PostRatting'])->middleware("jwtAuth");
 
 
 
