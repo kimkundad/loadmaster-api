@@ -13,6 +13,7 @@ use App\Models\news;
 use App\Models\holiday;
 use App\Models\setting;
 use App\Models\payment;
+use App\Models\noUserToken;
 
 use App\Models\Rooms;
 use App\Models\RoomParticipants;
@@ -94,6 +95,38 @@ class AuthController extends Controller
         }
 
     }
+
+    public function saveToken(Request $request)
+{
+    try {
+        // ตรวจสอบว่า userId มีอยู่ในฐานข้อมูลแล้วหรือไม่
+        $existingToken = noUserToken::where('userId', $request->userId)->first();
+
+        if ($existingToken) {
+            // ถ้ามี userId อยู่แล้ว อัปเดต token
+            $existingToken->token = $request->token;
+            $existingToken->save();
+        } else {
+            // ถ้ายังไม่มี userId สร้าง record ใหม่
+            $newToken = new noUserToken();
+            $newToken->token = $request->token;
+            $newToken->userId = $request->userId;
+            $newToken->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Token saved successfully.',
+        ]);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+
 
     public function PostRatting(Request $request){
 

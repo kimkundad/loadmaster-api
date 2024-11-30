@@ -27,7 +27,7 @@ Route::get('/getSetting', [AuthController::class, 'getSetting']);
 Route::get('/getNews', [AuthController::class, 'getNews']);
 Route::get('/getHoliday', [AuthController::class, 'getHoliday']);
 Route::get('/getNewsById/{id}', [AuthController::class, 'getNewsById']);
-
+Route::post('/saveToken', [AuthController::class, 'saveToken']);
 
 
 Route::get('/logout', [AuthController::class, 'logout'])->middleware("jwtAuth");
