@@ -28,7 +28,7 @@ class MessageSent
 
         // ส่งข้อความไปยัง Socket.IO
         $client = new \GuzzleHttp\Client();
-        $response = $client->post('https://chat.loadmasterth.com/msg', [
+        $response = $client->post('https://c4c6-124-120-34-179.ngrok-free.app/msg', [
             'json' => [
                 'event' => 'new-message',
                 'room_id' => $message->room_id, // ระบุห้อง
