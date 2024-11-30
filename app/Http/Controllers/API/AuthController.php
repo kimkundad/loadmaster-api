@@ -128,6 +128,7 @@ class AuthController extends Controller
 }
 
 
+
     public function PostRatting(Request $request){
 
         try {
