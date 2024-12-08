@@ -57,6 +57,7 @@ Route::post('/updateReceipt', [AuthController::class, 'updateReceipt'])->middlew
 Route::post('/postPayment', [AuthController::class, 'postPayment'])->middleware("jwtAuth");
 Route::post('/PostRatting', [AuthController::class, 'PostRatting'])->middleware("jwtAuth");
 
+Route::get('/getNotiNew', [AuthController::class, 'getNotiNew'])->middleware("jwtAuth");
 
 
 //driver

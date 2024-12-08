@@ -14,6 +14,7 @@ use App\Models\holiday;
 use App\Models\setting;
 use App\Models\payment;
 use App\Models\noUserToken;
+use App\Models\notiNew;
 
 use App\Models\Rooms;
 use App\Models\RoomParticipants;
@@ -86,6 +87,29 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'room' => $room,
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+            ], 500);
+        }
+
+    }
+
+
+    public function getNotiNew(Request $request){
+
+        try {
+            // รับรองความถูกต้องของ token
+            $user = JWTAuth::authenticate($request->token);
+
+            $objs = notiNew::where('user_id', $user->id)->get();
+
+            return response()->json([
+                'success' => true,
+                'noti' => $objs
             ]);
 
         } catch (Exception $e) {
