@@ -35,6 +35,7 @@ use PDF;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PDFMail;
 use App\Events\MessageSent;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -2196,6 +2197,27 @@ public function postCancelDanger(Request $request)
     }
 
 
+    private function sendNotification($expoPushToken, $message)
+    {
+        $endpoint = 'https://exp.host/--/api/v2/push/send';
+
+        $response = Http::post($endpoint, [
+            'to' => $expoPushToken,
+            'title' => $message['title'],
+            'body' => $message['body'],
+            'data' => $message['data'],
+            'icon' => 'https://loadmasterth.com/img/iconNoti.png', // ไอคอนสำหรับ Notification
+            'image' => 'https://loadmasterth.com/img/iconNoti2.png', // รูปภาพใหญ่
+        ]);
+
+        if ($response->failed()) {
+            Log::error('Failed to send notification', [
+                'token' => $expoPushToken,
+                'response' => $response->body(),
+            ]);
+        }
+    }
+
 
     public function postNotiDri(Request $request){
 
@@ -2213,6 +2235,17 @@ public function postCancelDanger(Request $request)
 
               $order->newStatus = $request->newStatus;
               $order->time_step2 = Carbon::now();
+
+              $userToken = noUserToken::where('userId', $order->user_id)->first();
+
+              if ($userToken && $userToken->token) {
+                // ส่ง Notification
+                $this->sendNotification($userToken->token, [
+                    'title' => 'พัสดุอยู่ระหว่างการนำส่ง',
+                    'body' => 'คนขับรถออกจากคลังสินค้าเพื่อนำพัสดุไปส่งให้กับท่าน.',
+                    'data' => ['order_id' => $order->id],
+                ]);
+            }
 
 
                 return response()->json([
