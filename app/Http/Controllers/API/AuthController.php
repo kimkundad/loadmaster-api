@@ -1086,7 +1086,7 @@ public function storeMessage(Request $request)
                             'id' => '1',
                             'date' => $order->created_at,
                             'status' => 'กำลังดำเนินการ',
-                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
+                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้าและจะทำการส่งสินค้าให้ในวันพรุ่งนี้',
                             'active' => true,
                             'icon' => 'pending'
                         ],
