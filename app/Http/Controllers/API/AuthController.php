@@ -2271,11 +2271,13 @@ public function postCancelDanger(Request $request)
                 ]);
             }
 
-
+            $orderv = order::findOrFail($request->id);
 
                 return response()->json([
                     'data' => [
                         'success' => $order->save(),
+                        'data' => $orderv,
+
                     ]
                 ]);
 
