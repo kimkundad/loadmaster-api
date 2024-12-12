@@ -1015,7 +1015,11 @@ public function storeMessage(Request $request)
                             'status' => 'อยู่ระหว่างการขนส่ง',
                             'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
                             'active' => true,
-                            'icon' => 'local-shipping'
+                            'icon' => 'local-shipping',
+                            'statusEn' => 'The product is in transit.',
+                            'descriptionEn' => 'Parcels leave the warehouse to Samut Prakan Province. - '. $order->b_address,
+                            'statusCn' => '在途中',
+                            'descriptionCn' => '包裹离开仓库发往北榄府。 - '. $order->b_address,
                         ],
                         [
                             'id' => '2',
@@ -1023,7 +1027,11 @@ public function storeMessage(Request $request)
                             'status' => 'กำลังเตรียมพัสดุ',
                             'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
                             'active' => false,
-                            'icon' => 'inventory'
+                            'icon' => 'inventory',
+                            'statusEn' => 'Preparing the package',
+                            'descriptionEn' => 'Drivers are at the warehouse to load products into vehicles.',
+                            'statusCn' => '准备包裹',
+                            'descriptionCn' => '司机在仓库将产品装载到车辆上。',
                         ],
                         [
                             'id' => '3',
@@ -1031,7 +1039,11 @@ public function storeMessage(Request $request)
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => false,
-                            'icon' => 'pending'
+                            'icon' => 'pending',
+                            'statusEn' => 'in progress',
+                            'descriptionEn' => 'The system is looking for a driver to pick up a package from the warehouse.',
+                            'statusCn' => '进行中',
+                            'descriptionCn' => '系统正在寻找司机从仓库提取包裹。',
                         ],
                     ];
                 }else{
@@ -1039,19 +1051,27 @@ public function storeMessage(Request $request)
                     $timeLine = [
                         [
                             'id' => '1',
-                            'date' => $order->time_step2,
+                            'date' => '04-11-2024 21:56',
                             'status' => 'อยู่ระหว่างการขนส่ง',
                             'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
-                            'active' => false,
-                            'icon' => 'local-shipping'
+                            'active' => true,
+                            'icon' => 'local-shipping',
+                            'statusEn' => 'The product is in transit.',
+                            'descriptionEn' => 'Parcels leave the warehouse to Samut Prakan Province. - '. $order->b_address,
+                            'statusCn' => '在途中',
+                            'descriptionCn' => '包裹离开仓库发往北榄府。 - '. $order->b_address,
                         ],
                         [
                             'id' => '2',
-                            'date' => $order->time_step1,
+                            'date' => '04-11-2024 21:56',
                             'status' => 'กำลังเตรียมพัสดุ',
                             'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
-                            'active' => true,
-                            'icon' => 'inventory'
+                            'active' => false,
+                            'icon' => 'inventory',
+                            'statusEn' => 'Preparing the package',
+                            'descriptionEn' => 'Drivers are at the warehouse to load products into vehicles.',
+                            'statusCn' => '准备包裹',
+                            'descriptionCn' => '司机在仓库将产品装载到车辆上。',
                         ],
                         [
                             'id' => '3',
@@ -1059,7 +1079,11 @@ public function storeMessage(Request $request)
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => false,
-                            'icon' => 'pending'
+                            'icon' => 'pending',
+                            'statusEn' => 'in progress',
+                            'descriptionEn' => 'The system is looking for a driver to pick up a package from the warehouse.',
+                            'statusCn' => '进行中',
+                            'descriptionCn' => '系统正在寻找司机从仓库提取包裹。',
                         ],
                     ];
 
@@ -1075,31 +1099,47 @@ public function storeMessage(Request $request)
                             'status' => 'จัดส่งสำเร็จ',
                             'description' => 'พัสดุถูกจัดส่งสำเร็จถึงปลายทาง',
                             'active' => true,
-                            'icon' => 'done'
-                        ],
-                        [
-                            'id' => '3',
-                            'date' => $order->time_step2,
-                            'status' => 'อยู่ระหว่างการขนส่ง',
-                            'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
-                            'active' => false,
-                            'icon' => 'local-shipping'
-                        ],
-                        [
-                            'id' => '2',
-                            'date' => $order->time_step1,
-                            'status' => 'กำลังเตรียมพัสดุ',
-                            'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
-                            'active' => false,
-                            'icon' => 'inventory'
+                            'icon' => 'done',
+                            'statusEn' => 'Successful delivery',
+                            'descriptionEn' => 'The package was successfully delivered to its destination.',
+                            'statusCn' => '发货成功',
+                            'descriptionCn' => '包裹已成功送达目的地。',
                         ],
                         [
                             'id' => '1',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'อยู่ระหว่างการขนส่ง',
+                            'description' => 'พัสดุออกจากคลังสินค้า ไปยัง จ.สมุทรปราการ - '. $order->b_address,
+                            'active' => true,
+                            'icon' => 'local-shipping',
+                            'statusEn' => 'The product is in transit.',
+                            'descriptionEn' => 'Parcels leave the warehouse to Samut Prakan Province. - '. $order->b_address,
+                            'statusCn' => '在途中',
+                            'descriptionCn' => '包裹离开仓库发往北榄府。 - '. $order->b_address,
+                        ],
+                        [
+                            'id' => '2',
+                            'date' => '04-11-2024 21:56',
+                            'status' => 'กำลังเตรียมพัสดุ',
+                            'description' => 'คนขับรถอยู่คลังสินค้าเพื่อโหลดสินค้าขึ้นรถ',
+                            'active' => false,
+                            'icon' => 'inventory',
+                            'statusEn' => 'Preparing the package',
+                            'descriptionEn' => 'Drivers are at the warehouse to load products into vehicles.',
+                            'statusCn' => '准备包裹',
+                            'descriptionCn' => '司机在仓库将产品装载到车辆上。',
+                        ],
+                        [
+                            'id' => '3',
                             'date' => $order->created_at,
                             'status' => 'กำลังดำเนินการ',
                             'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
                             'active' => false,
-                            'icon' => 'pending'
+                            'icon' => 'pending',
+                            'statusEn' => 'in progress',
+                            'descriptionEn' => 'The system is looking for a driver to pick up a package from the warehouse.',
+                            'statusCn' => '进行中',
+                            'descriptionCn' => '系统正在寻找司机从仓库提取包裹。',
                         ],
 
                     ];
@@ -1107,12 +1147,16 @@ public function storeMessage(Request $request)
                     // Timeline for code_order = 0
                     $timeLine = [
                         [
-                            'id' => '1',
+                            'id' => '3',
                             'date' => $order->created_at,
                             'status' => 'กำลังดำเนินการ',
-                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้าและจะทำการส่งสินค้าให้ในวันพรุ่งนี้',
-                            'active' => true,
-                            'icon' => 'pending'
+                            'description' => 'ระบบกำลังหาคนขับรถออกไปรับพัสดุจากคลังสินค้า',
+                            'active' => false,
+                            'icon' => 'pending',
+                            'statusEn' => 'in progress',
+                            'descriptionEn' => 'The system is looking for a driver to pick up a package from the warehouse.',
+                            'statusCn' => '进行中',
+                            'descriptionCn' => '系统正在寻找司机从仓库提取包裹。',
                         ],
                     ];
                 }
