@@ -81,3 +81,5 @@ Route::post('/UpAvatar', [AuthController::class, 'UpAvatar'])->middleware("jwtAu
 Route::get('/createRooms', [AuthController::class, 'createRoom'])->middleware("jwtAuth");
 Route::get('/chat-history', [AuthController::class, 'fetchChatHistory'])->middleware("jwtAuth");
 Route::post('/storeMessage', [AuthController::class, 'storeMessage']);
+
+Route::post('/delete_account', [AuthController::class, 'delete_account'])->middleware("jwtAuth");

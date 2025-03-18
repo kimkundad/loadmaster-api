@@ -1559,6 +1559,31 @@ public function postCancelDanger(Request $request)
 
     }
 
+    public function delete_account(Request $request){
+
+        try{
+            $user = JWTAuth::authenticate($request->token);
+
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            $timestamp = now()->timestamp;
+            $newEmail = $user->email . "Delete{$timestamp}";
+
+            $user->update(['email' => $newEmail]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User email updated and relationships cleared successfully',
+            ], 200);
+
+        }catch(Exception $e){
+            return response()->json(['success'=>false,'message'=>'something went wrong']);
+        }
+
+    }
+
 
     public function UpAvatar(Request $request){
 
