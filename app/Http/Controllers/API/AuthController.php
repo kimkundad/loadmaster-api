@@ -708,12 +708,24 @@ public function storeMessage(Request $request)
             'success' => true,
             'token' => $jwt_token,
             'user'=> Auth::user(),
+            'refresh_token' => $this->createRefreshToken($request->phone),
             'verify' => 1
             ]);
 
        }
 
 
+    }
+
+
+    private function createRefreshToken($phone)
+    {
+        $refreshToken = bin2hex(random_bytes(40)); // สร้าง Refresh Token แบบสุ่ม
+        \DB::table('refresh_tokens')->updateOrInsert(
+            ['phone' => $phone], // ตรวจสอบว่ามีอยู่หรือไม่
+            ['refresh_token' => $refreshToken, 'created_at' => now()]
+        );
+        return $refreshToken;
     }
 
     public function userBranchCreate(Request $request){
@@ -2360,12 +2372,37 @@ public function postCancelDanger(Request $request)
 
 
 
-    public function refresh()
+    // public function refresh()
+    // {
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'user' => Auth::user(),
+    //         'token' => Auth::refresh(),
+    //     ]);
+    // }
+
+
+    public function refresh(Request $request)
     {
+        $refreshToken = $request->refresh_token;
+        $tokenRecord = \DB::table('refresh_tokens')->where('refresh_token', $refreshToken)->first();
+
+        if (!$tokenRecord) {
+            return response()->json(['error' => 'Invalid refresh token'], 401);
+        }
+
+        // ดึงข้อมูลผู้ใช้จาก Refresh Token
+        $user = \App\Models\User::where('phone', $tokenRecord->phone)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // ออก Access Token ใหม่
+        $newToken = JWTAuth::fromUser($user);
+
         return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-            'token' => Auth::refresh(),
+            'access_token' => $newToken
         ]);
     }
 
