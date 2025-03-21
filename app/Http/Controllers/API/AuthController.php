@@ -48,7 +48,7 @@ class AuthController extends Controller
     }
 
     public function getNews() {
-        $news = news::where('startdate', '<=', Carbon::now())->get();
+        $news = news::where('startdate', '<=', Carbon::now())->where('status', 1)->get();
 
         // เพิ่ม URL พื้นฐานให้กับภาพ
         $baseUrl = 'https://kimspace2.sgp1.cdn.digitaloceanspaces.com/loadmaster/news/';
