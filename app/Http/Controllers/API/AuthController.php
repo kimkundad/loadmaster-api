@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
+
     public $token = true;
 
     public function username()
