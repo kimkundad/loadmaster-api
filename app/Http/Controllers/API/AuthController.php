@@ -633,87 +633,93 @@ public function storeMessage(Request $request)
 
     public function verify(Request $request)
     {
-    // Validate the input data
-    $data = $request->validate([
-        'verification_code' => ['required', 'numeric'],
-        'phone_number' => ['required', 'string'],
-    ]);
-
-    $cleaned_phone_number = str_replace('+66', '', $data['phone_number']);
-
-    $user = DB::table('users')
-        ->where('phone', $cleaned_phone_number)
-        ->where('otp', $data['verification_code'])
-        ->first();
-
-      //  return response()->json([ 'data' => $request->all(), 'user' => $user ]);
-
-        if ($user) {
-            // Clean phone number by removing country code (assuming Thailand's +66)
-
-
-            // Update the user as verified based on the cleaned phone number
-            $user = User::where('phone', $cleaned_phone_number)->firstOrFail();
-            $user->update(['is_verified' => true]);
-            //dd($user->p_x);
-            // If there's a login attempt, ensure data is passed correctly
-            $data['p_x'] = $user->p_x;
-
-            $login_data = new Request([
-                'phone' => $cleaned_phone_number,
-                'password' => $data['p_x'],
-            ]);
-
-            // Call the login method (ensure the login method is properly defined)
-            return $this->login($login_data);
-        }
-
-
-
-    // If verification failed due to an invalid code
-    return response()->json([
-        'success' => false,
-        'error' => 'Invalid verification code entered!',
-    ], 401);
-}
-
-    public function login(Request $request)
-    {
-        $input = $request->only('phone', 'password');
-        $jwt_token = null;
-      //  dd($input);
-
-
-
-        if (!$jwt_token = JWTAuth::attempt($input)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid Email or Password',
-                'verify' => 2
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-       // dd(Auth::user()->is_verified);
-
-       if(Auth::user()->is_verified === 0){
-
-        return response()->json([
-            'success' => false,
-            'message' => 'please verify otp',
-            'verify' => 0
+        // Validate the input data
+        $data = $request->validate([
+            'verification_code' => ['required', 'numeric'],
+            'phone_number' => ['required', 'string'],
         ]);
 
-       }else{
+        $cleaned_phone_number = str_replace('+66', '', $data['phone_number']);
 
+        $user = DB::table('users')
+            ->where('phone', $cleaned_phone_number)
+            ->where('otp', $data['verification_code'])
+            ->first();
+
+        //  return response()->json([ 'data' => $request->all(), 'user' => $user ]);
+
+            if ($user) {
+                // Clean phone number by removing country code (assuming Thailand's +66)
+
+
+                // Update the user as verified based on the cleaned phone number
+                $user = User::where('phone', $cleaned_phone_number)->firstOrFail();
+                $user->update(['is_verified' => true]);
+                //dd($user->p_x);
+                // If there's a login attempt, ensure data is passed correctly
+                $data['p_x'] = $user->p_x;
+
+                $login_data = new Request([
+                    'phone' => $cleaned_phone_number,
+                    'password' => $data['p_x'],
+                ]);
+
+                // Call the login method (ensure the login method is properly defined)
+                return $this->login($login_data);
+            }
+
+
+
+        // If verification failed due to an invalid code
         return response()->json([
-            'success' => true,
-            'token' => $jwt_token,
-            'user'=> Auth::user(),
-            'refresh_token' => $this->createRefreshToken($request->phone),
-            'verify' => 1
+            'success' => false,
+            'error' => 'Invalid verification code entered!',
+        ], 401);
+    }
+
+    public function login(Request $request)
+        {
+
+            $request->validate([
+                'phone' => 'required',
+                'password' => 'required'
             ]);
 
-       }
+            $input = $request->only('phone', 'password');
+            $jwt_token = null;
+        //  dd($input);
+
+
+
+            if (!$jwt_token = JWTAuth::attempt($input)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Email or Password',
+                    'verify' => 2
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+
+        // dd(Auth::user()->is_verified);
+
+        if(Auth::user()->is_verified === 0){
+
+            return response()->json([
+                'success' => false,
+                'message' => 'please verify otp',
+                'verify' => 0
+            ]);
+
+        }else{
+
+            return response()->json([
+                'success' => true,
+                'token' => $jwt_token,
+                'user'=> Auth::user(),
+                'refresh_token' => $this->createRefreshToken($request->phone),
+                'verify' => 1
+                ]);
+
+        }
 
 
     }
