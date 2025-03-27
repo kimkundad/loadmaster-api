@@ -682,7 +682,11 @@ public function storeMessage(Request $request)
 
             $request->validate([
                 'phone' => 'required',
-                'password' => 'required'
+                'password' => 'required|min:8',
+            ], [
+                'phone.required' => 'กรุณาระบุหมายเลขโทรศัพท์',
+                'password.required' => 'กรุณาระบุรหัสผ่าน',
+                'password.min' => 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร',
             ]);
 
             $input = $request->only('phone', 'password');
