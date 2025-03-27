@@ -682,11 +682,7 @@ public function storeMessage(Request $request)
 
             $request->validate([
                 'phone' => 'required',
-                'password' => 'required|min:8',
-            ], [
-                'phone.required' => 'กรุณาระบุหมายเลขโทรศัพท์',
-                'password.required' => 'กรุณาระบุรหัสผ่าน',
-                'password.min' => 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร',
+                'password' => 'required'
             ]);
 
             $input = $request->only('phone', 'password');
@@ -698,7 +694,7 @@ public function storeMessage(Request $request)
             if (!$jwt_token = JWTAuth::attempt($input)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid Email or Password',
+                    'message' => 'Invalid Phone or Password',
                     'verify' => 2
                 ], Response::HTTP_UNAUTHORIZED);
             }
